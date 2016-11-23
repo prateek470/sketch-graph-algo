@@ -1,0 +1,75 @@
+<html>
+	<head>
+		<title>PaperJS - Starter Canvas</title>
+		<!-- An AMD-loader like RequireJS is necessary for srlib's asynchronous modules -->
+		<script src="js/require.js"></script>
+		<!-- Load srlib following RequireJS -->
+		<script src="js/srlib.js"></script>	
+		<!--Paper JS-->
+		<script src="js/paper-full.js"></script>
+		<!--Fonts and styling-->
+		<link href="css/style.css" rel='stylesheet' type='text/css'/>
+   
+	</head>
+	<body>	
+	<script type="text/paperscript" canvas="canvas">
+			
+					
+	function onMouseDown(event) {
+		// PaperJS add a new Path object and initial starting point
+		path = new Path();
+		path.strokeColor = 'red';
+		path.strokeWidth = 2;
+		path.add(event.point);
+		
+		// SRLlib add a new Stroke object and initial starting point
+		stroke = new srlib.core.data.container.Stroke();
+		point = new srlib.core.data.container.Point(event.point.x,event.point.y)
+		if (typeof sketch == "undefined") {
+			sketch = new srlib.core.data.container.Sketch();
+		}
+		sketch.addStroke(stroke);
+		sketch.addPoint(point);
+		stroke.addPoint(point);
+	}
+
+	function onMouseDrag(event) {
+		// PaperJS add points to Path object on mouse drag
+		path.add(event.point);
+		//console.log(event.point)
+
+		// SRLlib add points to Stroke on mouse drag
+		point = new srlib.core.data.container.Point(event.point.x,event.point.y)
+		sketch.addPoint(point);
+		stroke.addPoint(point);
+	}
+
+	function onMouseUp(event) {	
+		//console.log(event.point);
+		console.log(stroke.getPoints());
+		//time = startTimer();
+		
+		
+		for(var i = 2; i < stroke.getPoints().length; i++ ) {
+			//console.log(Math.atan(stroke.getPoints()[i].y - stroke.getPoints()[i-1].y)/(stroke.getPoints()[i].x - stroke.getPoints()[i-1].x));
+		}
+	// Add evaluation / recognition functions or whatever you want here!
+	
+	}
+	
+	var path = new Path.Circle({
+	center: view.center,
+	radius: 70,
+	fillColor: 'red'
+});
+
+	function onFrame(event) {
+		// Your animation code goes in here
+		path.fillcolor.hue +=2
+	}
+	</script>	
+	
+	<canvas id="canvas" rezise="true"></canvas>
+	
+   </body>
+ </html>
