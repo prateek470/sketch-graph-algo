@@ -1,4 +1,4 @@
-<html>
+ <html>
 	<head>
 		<title>PaperJS - Starter Canvas</title>
 		<!-- An AMD-loader like RequireJS is necessary for srlib's asynchronous modules -->
@@ -10,6 +10,9 @@
 		<!--Fonts and styling-->
 		<link href="css/style.css" rel='stylesheet' type='text/css'/>
    
+		<script type="text/javascript" src="js/model.js"></script>
+		<script type="text/javascript" src="js/rubine.js"></script>
+
 	</head>
 	<body>	
 	<script type="text/paperscript" canvas="canvas">
@@ -18,7 +21,7 @@
 	function onMouseDown(event) {
 		// PaperJS add a new Path object and initial starting point
 		path = new Path();
-		path.strokeColor = 'red';
+		path.strokeColor = 'black';
 		path.strokeWidth = 2;
 		path.add(event.point);
 		
@@ -34,32 +37,36 @@
 	}
 
 	function onMouseDrag(event) {
-		// PaperJS add points to Path object on mouse drag
-		path.add(event.point);
-		//console.log(event.point)
+	// PaperJS add points to Path object on mouse drag
+	path.add(event.point);
 
-		// SRLlib add points to Stroke on mouse drag
-		point = new srlib.core.data.container.Point(event.point.x,event.point.y)
-		sketch.addPoint(point);
-		stroke.addPoint(point);
+	// SRLlib add points to Stroke on mouse drag
+	point = new srlib.core.data.container.Point(event.point.x,event.point.y)
+	sketch.addPoint(point);
+	stroke.addPoint(point);
 	}
+
+
+
 
 	function onMouseUp(event) {	
-		//console.log(event.point);
-		console.log(stroke.getPoints());
-		//time = startTimer();
-		
-		
-		for(var i = 2; i < stroke.getPoints().length; i++ ) {
-			//console.log(Math.atan(stroke.getPoints()[i].y - stroke.getPoints()[i-1].y)/(stroke.getPoints()[i].x - stroke.getPoints()[i-1].x));
-		}
-	// Add evaluation / recognition functions or whatever you want here!
 	
+	// Add evaluation / recognition functions or whatever you want here!
+	var points = stroke.getPoints();
+	if(points[0].distance(points[points.length-1])<=10)
+		path.strokeColor = 'red';
+	if(feature_f5(points)/feature_f8(points) > 0.9)
+		path.strokeColor = 'blue';
+
 	}
 	
+
+
+
 	</script>	
 	
-	<canvas id="canvas" rezise="true"></canvas>
+	<canvas id="canvas" rezise="true"  style="position:fixed;top:0px;left:0px;width:80%;border:1px solid #d3d3d3"></canvas>
 	
    </body>
  </html>
+
