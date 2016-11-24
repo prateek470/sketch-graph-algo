@@ -29,7 +29,7 @@
 			}
 			get getEdges() {
 				if(!this.edges){
-					this.edges = ["edge"]
+					this.edges = []
 				}
 				return this.edges
 			}
