@@ -74,6 +74,13 @@
 		node.setCenter = new srlib.core.data.container.Point(center.x,center.y)
 		node.path = myCircle
 		node.original = path
+
+		var text = new PointText(center);
+		text.fillColor = 'black';
+		text.fontSize = 15
+		text.justification = 'center'
+		node.setName = 	String.fromCharCode('A'.charCodeAt() + node.getId)
+		text.content = node.getName
 		fig.addNode(node)
 
 	}
