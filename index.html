@@ -60,9 +60,11 @@
 		myCircle.strokeColor = 'red';
 		path.strokeColor = 'white';
 	}
-	if(feature_f5(points)/feature_f8(points) > 0.9)
-		path.strokeColor = 'blue';
-
+	if(feature_f5(points)/feature_f8(points) > 0.9){
+		var myLine = new Path.Line(points[0],points[points.length-1])
+		myLine.strokeColor = 'blue';
+		path.strokeColor = 'white';
+	}
 	}
 	
 
