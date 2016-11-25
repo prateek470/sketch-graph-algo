@@ -71,6 +71,7 @@
 		<!-- Update model -->
 		var node  = new Node(fig.getNodes.length)
 		node.setCenter = new srlib.core.data.container.Point(center.x,center.y)
+		node.path = myCircle
 		fig.addNode(node)
 
 	}
@@ -85,6 +86,7 @@
 		edge.endpoints = []
 		edge.endpoints.push(points[0])
 		edge.endpoints.push(points[points.length-1])
+		edge.path = myLine
 		fig.addUndirected(edge)
 
 	}
@@ -103,7 +105,9 @@
 	<canvas id="canvas" rezise="true"  style="position:fixed;top:0px;left:0px;width:80%;border:1px solid #d3d3d3"></canvas>
 	
 	<div style="position:fixed;top:20px;right:50px"> 
-		<button id="recognize" type="button" class = "button" onclick="Recognize(fig)"> Recognize </button>
+		<button id="recognize" type="button" class = "button" onclick="Recognize(fig)"> Run BFS </button>
+		<br/><br/><br/><br/>
+		<button id="refresh" type="button" class = "button" onclick="location.reload(true)"> Clear sketch </button>
 	</div>
    </body>
  </html>

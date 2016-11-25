@@ -35,6 +35,58 @@
 		}
 
 		console.log(JSON.stringify(matrix))
+
+		var paths = runBFS(nodes,edges)
+		animate(paths,0)
+	}
+
+	// sleep time expects milliseconds
+	function sleep (time) {
+	  return new Promise((resolve) => setTimeout(resolve, time));
+	}
+
+	function animate(paths,index){
+	// Usage!
+	if(index == paths.length)
+			return
+	sleep(1500).then(() => {
+	    // Do something after the sleep!
+	    paths[index].strokeColor = 'black'
+	    paths[index].fillColor = 'black'
+	    paths[index].strokeWidth = 5
+	    animate(paths,index+1)
+	});
+	}
+
+	function runBFS(nodes,edges){
+		var paths = []
+		var visited = new Array(nodes.length)
+		for(var i=0;i<nodes.length;i++)
+			visited[i] = false
+
+		Q = []
+		Q.push(fig.getStartNode)
+		visited[fig.getStartNode] = true
+		paths.push(nodes[fig.getStartNode].path)
+
+		while(Q.length > 0){
+			var node = nodes[Q.shift()]
+			for(var i = 0;i < node.getEdges.length; i++){
+				var edge = node.getEdges[i]
+				var othernode
+				if(edge.getStart.getId == node.getId)
+					othernode = edge.getEnd
+				else
+					othernode = edge.getStart
+				if( visited[othernode.getId] == false){
+					paths.push(edge.path)
+					paths.push(othernode.path)
+					Q.push(othernode.getId)
+					visited[othernode.getId] = true
+				}
+			}
+		}
+		return paths
 	}
 
 	function getClosest(point, nodes){
