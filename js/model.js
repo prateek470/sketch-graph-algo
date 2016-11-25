@@ -1,12 +1,17 @@
 // Class Definitions
 
 		class Node{
-			constructor(name, value, center, edges, visibility){
+			constructor(id, name, value, center, edges, visibility){
+				this.id = id
 				this.name = name
 				this.value = value
 				this.edges = edges
 				this.visibility = visibility
 				this.center = center
+			}
+
+			get getId() {
+				return this.id
 			}
 
 			get getName() {
@@ -18,6 +23,7 @@
 			set setName(value) {
 				this.name = value
 			}
+
 			get getValue() {
 				return this.value
 			}
@@ -27,6 +33,7 @@
 				}
 				this.value = value
 			}
+
 			get getEdges() {
 				if(!this.edges){
 					this.edges = []
@@ -36,6 +43,11 @@
 			set setEdges(value) {
 				this.edges = value
 			}
+
+			addEdge(value){
+				this.getEdges.push(value)
+			}
+
 			get getVisibility() {
 				if(!this.visibility){
 					this.visibility = false
@@ -46,6 +58,7 @@
 			set setVisibility(value) {
 				this.visibility = value
 			}
+
 			get getCenter() {
 				return this.center
 			}
@@ -56,12 +69,17 @@
 
 
 		class Edge{
-			constructor(start, end, value, type, visibility){
+			constructor(id, start, end, value, type, visibility){
+				this.id = id
 				this.start = start
 				this.end = end
 				this.value = value
 				this.visibility = visibility
 				this.type = type
+			}
+
+			get getId() {
+				return this.id
 			}
 
 			get getStart() {

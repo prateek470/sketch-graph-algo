@@ -12,6 +12,7 @@
    
 		<script type="text/javascript" src="js/model.js"></script>
 		<script type="text/javascript" src="js/rubine.js"></script>
+		<script type="text/javascript" src="js/util.js"></script>
 
 		<script type="text/javascript">
 		window.onload = function(){
@@ -59,20 +60,37 @@
 	
 	// Add evaluation / recognition functions or whatever you want here!
 	var points = stroke.getPoints();
- 	if(points.length > 20 && feature_f5(points)<=10){
+	<!-- Circle -->
+ 	if(points.length > 20 && feature_f5(points)<=10){ 
 		var BB = new srlib.core.data.container.BoundingBox(stroke);
 		var center = new Point( ((BB.getMaxX() + BB.getMinX()  )/2  ) ,( ( BB.getMaxY() + BB.getMinY() )/2 ) )
 		var myCircle = new Path.Circle(center, 30);
 		myCircle.strokeColor = 'red';
 		path.strokeColor = 'white';
+
+		<!-- Update model -->
+		var node  = new Node(fig.getNodes.length)
+		node.setCenter = new srlib.core.data.container.Point(center.x,center.y)
+		fig.addNode(node)
+
 	}
+	<!-- Line -->
 	else if(feature_f5(points)/feature_f8(points) > 0.9){
 		var myLine = new Path.Line(points[0],points[points.length-1])
 		myLine.strokeColor = 'blue';
 		path.strokeColor = 'white';
+
+		<!-- Update model -->
+		var edge = new Edge(fig.getUndirected.length)
+		edge.endpoints = []
+		edge.endpoints.push(points[0])
+		edge.endpoints.push(points[points.length-1])
+		fig.addUndirected(edge)
+
 	}
+	<!-- Not recognized -->
 	else{
-		alert('Unrecognized stroke');
+		<!-- alert('Unrecognized stroke'); -->
 		path.removeSegments()
 	}
 	}
@@ -84,6 +102,9 @@
 	
 	<canvas id="canvas" rezise="true"  style="position:fixed;top:0px;left:0px;width:80%;border:1px solid #d3d3d3"></canvas>
 	
+	<div style="position:fixed;top:20px;right:50px"> 
+		<button id="recognize" type="button" class = "button" onclick="Recognize(fig)"> Recognize </button>
+	</div>
    </body>
  </html>
 
