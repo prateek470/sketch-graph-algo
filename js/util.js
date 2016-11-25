@@ -140,12 +140,13 @@
 	  }  
 	}
 
-	function isCircle(points){
+	function isCircle(points,path){
 		var BB = new srlib.core.data.container.BoundingBox(stroke);
 		var radius = BB.getCenterPoint().distance(BB.getTopCenterPoint())
 		var center = new srlib.core.data.container.Point( ((BB.getMaxX() + BB.getMinX()  )/2  ) ,( ( BB.getMaxY() + BB.getMinY() )/2 ) )
 		var maxDeviation = 0
 		var totalDeviation = 0
+		var containsCenter = path.contains(center)
 		for(var i=0;i < points.length;i++){
 			var dist = points[i].distance(center)
 			var deviation = dist - radius
@@ -154,8 +155,8 @@
 				maxDeviation = deviation
 		}
 		console.log("Total : " + totalDeviation)
-		console.log("Max : " + maxDeviation)
-		return points.length > 20 && feature_f5(points)<=10 && totalDeviation < 750
+		console.log("Contains center : " + containsCenter)
+		return points.length > 20 && feature_f5(points)<=10 && Math.abs(totalDeviation) < 750 && containsCenter
 	}  
 
 	function isLine(points){

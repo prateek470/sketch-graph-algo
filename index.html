@@ -62,7 +62,7 @@
 	// Add evaluation / recognition functions or whatever you want here!
 	var points = stroke.getPoints();
 	<!-- Circle -->
- 	if(isCircle(points)){ 
+ 	if(isCircle(points,path)){ 
 		var BB = new srlib.core.data.container.BoundingBox(stroke);
 		var center = new Point( ((BB.getMaxX() + BB.getMinX()  )/2  ) ,( ( BB.getMaxY() + BB.getMinY() )/2 ) )
 		var myCircle = new Path.Circle(center, 30);
