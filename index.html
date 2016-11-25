@@ -67,12 +67,13 @@
 		var center = new Point( ((BB.getMaxX() + BB.getMinX()  )/2  ) ,( ( BB.getMaxY() + BB.getMinY() )/2 ) )
 		var myCircle = new Path.Circle(center, 30);
 		myCircle.strokeColor = 'red';
-		path.strokeColor = 'white';
+		path.visible = false;
 
 		<!-- Update model -->
 		var node  = new Node(fig.getNodes.length)
 		node.setCenter = new srlib.core.data.container.Point(center.x,center.y)
 		node.path = myCircle
+		node.original = path
 		fig.addNode(node)
 
 	}
@@ -80,7 +81,7 @@
 	else if(isLine(points)){
 		var myLine = new Path.Line(points[0],points[points.length-1])
 		myLine.strokeColor = 'blue';
-		path.strokeColor = 'white';
+		path.visible = false;
 
 		<!-- Update model -->
 		var edge = new Edge(fig.getUndirected.length)
@@ -88,6 +89,7 @@
 		edge.endpoints.push(points[0])
 		edge.endpoints.push(points[points.length-1])
 		edge.path = myLine
+		edge.original = path
 		fig.addUndirected(edge)
 
 	}
@@ -107,6 +109,8 @@
 	
 	<div style="position:fixed;top:20px;right:50px"> 
 		<input id="recognize" type="button" class = "button" value="Run BFS" onclick="Recognize(fig)"></input>
+		<br/><br/><br/><br/>
+		<input id="original" type="button" class = "button" value="Show Original" onclick="Original(fig)"></input>
 		<br/><br/><br/><br/>
 		<button id="refresh" type="button" class = "button" onclick="location.reload(true)"> Clear sketch </button>
 	</div>

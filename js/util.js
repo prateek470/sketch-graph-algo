@@ -162,3 +162,21 @@
 	function isLine(points){
 		return feature_f5(points)/feature_f8(points) > 0.9
 	}
+
+	function Original(fig){
+		var nodes = fig.getNodes
+		var edges = fig.getUndirected
+		if(document.getElementById('original').value == "Show Original"){
+			document.getElementById('original').value = "Hide Original"
+			for(var i = 0; i < nodes.length; i++)
+				nodes[i].original.visible = true
+			for(var i = 0; i < edges.length; i++)
+				edges[i].original.visible = true
+		}else{
+			document.getElementById('original').value = "Show Original"
+			for(var i = 0; i < nodes.length; i++)
+				nodes[i].original.visible = false
+			for(var i = 0; i < edges.length; i++)
+				edges[i].original.visible = false
+		}
+	}
