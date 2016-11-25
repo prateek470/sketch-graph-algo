@@ -37,11 +37,11 @@
 
 		console.log(JSON.stringify(matrix))
 		reRunFlag = true
+		document.getElementById('recognize').value = "Re-run BFS"
 		var paths = runBFS(nodes,edges)
 		animate(paths,0)
 		}
 		else{
-			document.getElementById('recognize').value = "Re-run BFS"
 			var paths = runBFS(nodes,edges)
 			for(var i=0;i<paths.length;i++){
 				paths[i].strokeColor = paths[i].data.originalStrokeColor
