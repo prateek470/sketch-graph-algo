@@ -133,6 +133,10 @@
 				this.nodes = value
 			}
 
+			addNode(value){
+				this.getNodes.push(value)
+			}
+
 			get getDirected() {
 				if(!this.directed){
 					this.directed = []
@@ -143,6 +147,10 @@
 				this.directed = value
 			}
 
+			addDirected(value){
+				this.getDirected.push(value)
+			}
+
 			get getUndirected() {
 				if(!this.undirected){
 					this.undirected = []
@@ -151,6 +159,10 @@
 			}
 			set setUndirected(value) {
 				this.undirected = value
+			}
+
+			addUndirected(value){
+				this.getUndirected.push(value)
 			}
 
 			get getStartNode(){
