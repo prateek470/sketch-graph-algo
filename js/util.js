@@ -38,11 +38,11 @@
 		console.log(JSON.stringify(matrix))
 		reRunFlag = true
 		document.getElementById('recognize').value = "Re-run BFS"
-		var paths = runBFS(nodes,edges)
+		var paths = runBFSOnGraph(nodes,edges)
 		animate(paths,0)
 		}
 		else{
-			var paths = runBFS(nodes,edges)
+			var paths = runBFSOnGraph(nodes,edges)
 			for(var i=0;i<paths.length;i++){
 				paths[i].strokeColor = paths[i].data.originalStrokeColor
 				paths[i].strokeWidth = paths[i].data.originalStrokeWidth
@@ -71,16 +71,25 @@
 	});
 	}
 
-	function runBFS(nodes,edges){
+	function runBFSOnGraph(nodes,edges){
 		var paths = []
 		var visited = new Array(nodes.length)
 		for(var i=0;i<nodes.length;i++)
 			visited[i] = false
+		paths = paths.concat(runBFS(nodes,edges,visited,fig.getStartNode))
+		for(var i=0;i<nodes.length;i++){
+			if(visited[i] == false)
+				paths = paths.concat(runBFS(nodes,edges,visited,i))
+		}
+		return paths
+	}
 
-		Q = []
-		Q.push(fig.getStartNode)
-		visited[fig.getStartNode] = true
-		paths.push(nodes[fig.getStartNode].path)
+	function runBFS(nodes,edges,visited,index){
+		var paths = []
+		var Q = []
+		Q.push(index)
+		visited[index] = true
+		paths.push(nodes[index].path)
 
 		while(Q.length > 0){
 			var node = nodes[Q.shift()]
