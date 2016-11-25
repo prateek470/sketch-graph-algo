@@ -62,7 +62,7 @@
 	// Add evaluation / recognition functions or whatever you want here!
 	var points = stroke.getPoints();
 	<!-- Circle -->
- 	if(points.length > 20 && feature_f5(points)<=10){ 
+ 	if(isCircle(points)){ 
 		var BB = new srlib.core.data.container.BoundingBox(stroke);
 		var center = new Point( ((BB.getMaxX() + BB.getMinX()  )/2  ) ,( ( BB.getMaxY() + BB.getMinY() )/2 ) )
 		var myCircle = new Path.Circle(center, 30);
@@ -77,7 +77,7 @@
 
 	}
 	<!-- Line -->
-	else if(feature_f5(points)/feature_f8(points) > 0.9){
+	else if(isLine(points)){
 		var myLine = new Path.Line(points[0],points[points.length-1])
 		myLine.strokeColor = 'blue';
 		path.strokeColor = 'white';

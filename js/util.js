@@ -138,4 +138,26 @@
 	    r=(r < n-r) ? n-r : r;  
 	    return product_Range(r+1, n)/product_Range(1,n-r);  
 	  }  
+	}
+
+	function isCircle(points){
+		var BB = new srlib.core.data.container.BoundingBox(stroke);
+		var radius = BB.getCenterPoint().distance(BB.getTopCenterPoint())
+		var center = new srlib.core.data.container.Point( ((BB.getMaxX() + BB.getMinX()  )/2  ) ,( ( BB.getMaxY() + BB.getMinY() )/2 ) )
+		var maxDeviation = 0
+		var totalDeviation = 0
+		for(var i=0;i < points.length;i++){
+			var dist = points[i].distance(center)
+			var deviation = dist - radius
+			totalDeviation += deviation
+			if(maxDeviation < deviation)
+				maxDeviation = deviation
+		}
+		console.log("Total : " + totalDeviation)
+		console.log("Max : " + maxDeviation)
+		return points.length > 20 && feature_f5(points)<=10 && totalDeviation < 750
 	}  
+
+	function isLine(points){
+		return feature_f5(points)/feature_f8(points) > 0.9
+	}
