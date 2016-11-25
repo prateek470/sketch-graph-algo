@@ -9,6 +9,7 @@
 			return
 		}
 
+		if(reRunFlag == false){
 		for(var i = 0; i < edges.length; i++){
 			var edge = edges[i]
 
@@ -35,9 +36,20 @@
 		}
 
 		console.log(JSON.stringify(matrix))
-
+		reRunFlag = true
 		var paths = runBFS(nodes,edges)
 		animate(paths,0)
+		}
+		else{
+			document.getElementById('recognize').value = "Re-run BFS"
+			var paths = runBFS(nodes,edges)
+			for(var i=0;i<paths.length;i++){
+				paths[i].strokeColor = paths[i].data.originalStrokeColor
+				paths[i].strokeWidth = paths[i].data.originalStrokeWidth
+			}
+			animate(paths,0)
+		}
+		
 	}
 
 	// sleep time expects milliseconds
@@ -51,8 +63,9 @@
 			return
 	sleep(1500).then(() => {
 	    // Do something after the sleep!
+	    paths[index].data.originalStrokeColor = paths[index].strokeColor
 	    paths[index].strokeColor = 'black'
-	    paths[index].fillColor = 'black'
+	    paths[index].data.originalStrokeWidth = paths[index].strokeWidth
 	    paths[index].strokeWidth = 5
 	    animate(paths,index+1)
 	});
