@@ -106,14 +106,41 @@
 		edge.original = path
 		fig.addUndirected(edge)
 
+		<!-- Edge weight -->
+		var center = new Point ((points[0].getX()+points[points.length-1].getX())/2, (points[0].getY()+points[points.length-1].getY())/2)
+		var text = new PointText(center);
+		text.data.edgeId = edge.getId
+		text.fillColor = 'black';
+		text.fontSize = 15
+		text.justification = 'left'
+		text.content = 0
+		text.onClick = function(){
+			var box = document.createElement('input'); // creates the element
+			box.id = this.data.edgeId
+			box.style.position = 'absolute';  // position it
+			box.style.left = center.x;
+			box.style.top = center.y;  
+			box.style.width = 25
+			box.oninput = function(){
+				fig.getUndirected[this.id].setValue = parseInt(this.value)
+				text.content = fig.getUndirected[this.id].getValue
+			}
+			box.onkeyup = function(e){
+				if (e.keyCode == 13){
+					document.body.removeChild(box)
+					console.log(fig.getUndirected)
+				}
+			}
+			document.body.appendChild(box)
+			box.focus()
+		}
 	}
 	<!-- Not recognized -->
 	else{
-		<!-- alert('Unrecognized stroke'); -->
 		path.removeSegments()
 	}
 	}
-	
+
 
 
 
