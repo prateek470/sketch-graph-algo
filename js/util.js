@@ -10,6 +10,9 @@
 		}
 
 		if(reRunFlag == false){
+			var select = document.getElementById("startnodes")
+			fig.setStartNode = select.options[select.selectedIndex].value
+
 		for(var i = 0; i < edges.length; i++){
 			var edge = edges[i]
 
@@ -46,6 +49,13 @@
 			for(var i=0;i<paths.length;i++){
 				paths[i].strokeColor = paths[i].data.originalStrokeColor
 				paths[i].strokeWidth = paths[i].data.originalStrokeWidth
+			}
+			
+			var select = document.getElementById("startnodes")
+			if(fig.getStartNode != select.options[select.selectedIndex].value)
+			{
+				fig.setStartNode = select.options[select.selectedIndex].value
+				paths = runBFSOnGraph(nodes,edges)
 			}
 			animate(paths,0)
 		}

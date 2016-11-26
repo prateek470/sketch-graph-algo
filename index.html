@@ -83,6 +83,13 @@
 		text.content = node.getName
 		fig.addNode(node)
 
+		var select = document.getElementById("startnodes")
+        var option = document.createElement('option')
+        option.text = node.getName
+        option.value = node.getId
+        select.add(option)
+    	
+
 	}
 	<!-- Line -->
 	else if(isLine(points)){
@@ -115,6 +122,8 @@
 	<canvas id="canvas" rezise="true"  style="position:fixed;top:0px;left:0px;width:80%;border:1px solid #d3d3d3"></canvas>
 	
 	<div style="position:fixed;top:20px;right:50px"> 
+		<b>Select start node :</b> <select id="startnodes" name="startnodes"></select>
+		<br/><br/><br/>
 		<input id="recognize" type="button" class = "button" value="Run BFS" onclick="Recognize(fig)"></input>
 		<br/><br/><br/><br/>
 		<input id="original" type="button" class = "button" value="Show Original" onclick="Original(fig)"></input>
