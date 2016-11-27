@@ -1,3 +1,97 @@
+	function RunShortestPath(fig){
+
+		var nodes = fig.getNodes
+		var edges = fig.getUndirected
+		if(reRunFlag == false){
+			Recognize(fig)
+			reRunFlag = true
+		}
+		else{
+			ClearAnimation()
+		}
+
+		var paths = Shortest(nodes,edges)
+		fig.oldpaths = paths
+		animate(paths,0)
+	}
+
+	function Shortest(nodes,edges){
+
+		var paths = []
+		var select = document.getElementById("sourcenode")
+		var src = select.selectedIndex
+		select = document.getElementById("destnode")
+		dest = select.selectedIndex
+
+		// Animate only node if source = destination
+		if(src == dest){
+			paths.push(nodes[src].path)
+			return paths
+		}
+
+		var queue = new PriorityQueue();
+		for(var i = 0; i < nodes.length; i++){
+			if(i==src){
+				nodes[i].path.data.priority = 0
+			}
+			else{
+				nodes[i].path.data.priority = Infinity
+			}
+			nodes[i].path.data.prevEdgeId = -1
+			queue.enqueue(nodes[i], nodes[i].path.data.priority);	
+		}
+		
+		var visited = new Array(nodes.length)
+		for(var i=0;i<nodes.length;i++)
+			visited[i] = false
+
+		while(!queue.isEmpty()){
+			var node = queue.dequeue()
+
+			// No path to destination node
+			if(!node || node.path.data.priority == Infinity)
+				break
+
+			
+			// If reached destination node
+			if(node.getId == dest){
+				while(node.path.data.prevEdgeId != -1){
+					var prevEdge = edges[node.path.data.prevEdgeId]
+					paths.push(node.path)
+					paths.push(prevEdge.path)
+					if(prevEdge.getStart.getId == node.getId)
+						node = prevEdge.getEnd
+					else
+						node = prevEdge.getStart
+				}
+				paths.push(node.path)
+				paths.reverse()
+				return paths
+			}
+			
+			visited[node.getId] = true
+			// Relax neighbors
+			for(var i = 0;i < node.getEdges.length; i++){
+				var edge = node.getEdges[i]
+				var othernode
+				if(edge.getStart.getId == node.getId)
+					othernode = edge.getEnd
+				else
+					othernode = edge.getStart
+				if( visited[othernode.getId] == false){
+					if(othernode.path.data.priority > node.path.data.priority + edge.getValue){
+						othernode.path.data.priority = node.path.data.priority + edge.getValue
+						othernode.path.data.prevEdgeId = edge.getId
+						queue.enqueue(othernode,othernode.path.data.priority)
+					}
+				}
+
+			}
+		}
+		alert('No path exists between ' + nodes[src].getName + ' and ' + nodes[dest].getName +' !')
+		return paths
+	}
+
 	function Recognize(fig){
 		console.log("Num of nodes : " + fig.getNodes.length)
 		console.log("Num of edges : " + fig.getUndirected.length)
@@ -8,10 +102,6 @@
 			alert("Not a graph")
 			return
 		}
-
-		if(reRunFlag == false){
-			var select = document.getElementById("startnodes")
-			fig.setStartNode = select.options[select.selectedIndex].value
 
 		for(var i = 0; i < edges.length; i++){
 			var edge = edges[i]
@@ -39,28 +129,29 @@
 		}
 
 		console.log(JSON.stringify(matrix))
-		reRunFlag = true
-		document.getElementById('recognize').value = "Re-run BFS"
-		var paths = runBFSOnGraph(nodes,edges)
-		animate(paths,0)
-		}
-		else{
-			var paths = runBFSOnGraph(nodes,edges)
-			for(var i=0;i<paths.length;i++){
-				paths[i].strokeColor = paths[i].data.originalStrokeColor
-				paths[i].strokeWidth = paths[i].data.originalStrokeWidth
-			}
-			
-			var select = document.getElementById("startnodes")
-			if(fig.getStartNode != select.options[select.selectedIndex].value)
-			{
-				fig.setStartNode = select.options[select.selectedIndex].value
-				paths = runBFSOnGraph(nodes,edges)
-			}
-			animate(paths,0)
-		}
 		
 	}
+
+	function BFS(){
+
+		var nodes = fig.getNodes
+		var edges = fig.getUndirected
+
+		var select = document.getElementById("startnodes")
+		fig.setStartNode = select.selectedIndex
+
+		if(reRunFlag == false){
+			Recognize(fig)
+			reRunFlag = true
+		}
+		else{
+			ClearAnimation()
+		}
+		var paths = runBFSOnGraph(nodes,edges)
+		fig.oldpaths = paths
+		animate(paths,0)
+	}
+
 
 	// sleep time expects milliseconds
 	function sleep (time) {
@@ -175,7 +266,7 @@
 		}
 		console.log("Total : " + totalDeviation)
 		console.log("Contains center : " + containsCenter)
-		return points.length > 20 && feature_f5(points)<=10 && Math.abs(totalDeviation) < 750 && containsCenter
+		return points.length > 20 && feature_f5(points)<=10 && Math.abs(totalDeviation) < 1000 && containsCenter
 	}  
 
 	function isLine(points){
@@ -198,4 +289,11 @@
 			for(var i = 0; i < edges.length; i++)
 				edges[i].original.visible = false
 		}
+	}
+
+	function ClearAnimation(){
+		for(var i=0;i<fig.oldpaths.length;i++){
+				fig.oldpaths[i].strokeColor = fig.oldpaths[i].data.originalStrokeColor
+				fig.oldpaths[i].strokeWidth = fig.oldpaths[i].data.originalStrokeWidth
+			}
 	}

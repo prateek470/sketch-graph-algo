@@ -12,11 +12,13 @@
    
 		<script type="text/javascript" src="js/model.js"></script>
 		<script type="text/javascript" src="js/rubine.js"></script>
+		<script type="text/javascript" src="js/priority-queue.js"></script>		
 		<script type="text/javascript" src="js/util.js"></script>
 
 		<script type="text/javascript">
 		window.onload = function(){
 			fig = new Figure()
+			fig.oldpaths = []
 			reRunFlag = false
 		}
 		</script>
@@ -83,12 +85,24 @@
 		text.content = node.getName
 		fig.addNode(node)
 
+		<!-- Add nodes to dropdowns -->
 		var select = document.getElementById("startnodes")
         var option = document.createElement('option')
         option.text = node.getName
         option.value = node.getId
         select.add(option)
-    	
+
+        select = document.getElementById("sourcenode")
+        option = document.createElement('option')
+        option.text = node.getName
+        option.value = node.getId
+    	select.add(option)
+
+    	select = document.getElementById("destnode")
+    	option = document.createElement('option')
+        option.text = node.getName
+        option.value = node.getId
+    	select.add(option)
 
 	}
 	<!-- Line -->
@@ -148,14 +162,34 @@
 	
 	<canvas id="canvas" rezise="true"  style="position:fixed;top:0px;left:0px;width:80%;border:1px solid #d3d3d3"></canvas>
 	
-	<div style="position:fixed;top:20px;right:50px"> 
-		<b>Select start node :</b> <select id="startnodes" name="startnodes"></select>
-		<br/><br/><br/>
-		<input id="recognize" type="button" class = "button" value="Run BFS" onclick="Recognize(fig)"></input>
-		<br/><br/><br/><br/>
+	<div style="position:fixed;top:10px;right:50px"> 
+		<div style="border: 1px solid green">
+		<br/><br/>
+		<b style="padding:10px">Select start node :</b> <select id="startnodes" name="startnodes"></select>
+		<br/><br/>
+		<div style="padding:10px"><input id="recognize" type="button" class = "button" value="Run BFS" onclick="BFS(fig)"></input></div>
+		<br/><br/>
+		</div>
+
+		<br/><br/>
+
+		<div style="border: 1px solid green">
+		<br/><br/>
+		<b style="padding:10px">Shortest path between :</b> <br/><br/>
+		<b style="padding:10px">Source :</b> <select id="sourcenode" name="sourcenode"></select> <br/><br/>
+		<b style="padding:10px">Destination :</b> <select id="destnode" name="destnode"></select>
+		<br/><br/>
+		<div style="padding:10px"><input id="shortest" type="button" class = "button" value="Shortest Path" onclick="RunShortestPath(fig)"></input></div>
+		<br/><br/>	
+		</div>
+
+		<br/><br/>
 		<input id="original" type="button" class = "button" value="Show Original" onclick="Original(fig)"></input>
 		<br/><br/><br/><br/>
+		<button id="clear" type="button" class = "button" onclick="ClearAnimation()"> Clear Animation </button>
+		<br/><br/><br/><br/>
 		<button id="refresh" type="button" class = "button" onclick="location.reload(true)"> Clear sketch </button>
+
 	</div>
    </body>
  </html>
