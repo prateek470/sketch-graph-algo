@@ -297,3 +297,15 @@
 				fig.oldpaths[i].strokeWidth = fig.oldpaths[i].data.originalStrokeWidth
 			}
 	}
+
+	function toggleMenu() {
+	  var menuBox = document.getElementById('menu');    
+	  if(menuBox.style.display == "block") { // if is menuBox displayed, hide it
+	    menuBox.style.display = "none"
+	    document.getElementById('showmenubtn').style.display = "block"
+	  }
+	  else { // if is menuBox hidden, display it
+	    menuBox.style.display = "block"
+	    document.getElementById('showmenubtn').style.display = "none"
+	  }
+	}
