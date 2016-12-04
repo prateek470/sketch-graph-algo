@@ -77,13 +77,41 @@
 		node.path = myCircle
 		node.original = path
 
+<!-- Add node name -->
 		var text = new PointText(center);
 		text.fillColor = 'black';
 		text.fontSize = 15
 		text.justification = 'center'
 		node.setName = 	String.fromCharCode('A'.charCodeAt() + node.getId)
 		text.content = node.getName
-		fig.addNode(node)
+		text.data.nodeId = node.getId
+		text.onClick = function(){
+			var box = document.createElement('input'); // creates the element
+			box.id = this.data.nodeId
+			box.style.position = 'absolute';  // position it
+			box.style.left = center.x;
+			box.style.top = center.y;  
+			box.style.width = 75
+			box.oninput = function(){
+				fig.getNodes[this.id].setName = this.value
+				text.content = fig.getNodes[this.id].getName
+			}
+			box.onkeyup = function(e){
+				if (e.keyCode == 13){
+					document.body.removeChild(box)
+					console.log(fig.getUndirected)
+					document.getElementById("startnodes").options[this.id].text = this.value
+					document.getElementById("sourcenode").options[this.id].text = this.value
+					document.getElementById("destnode").options[this.id].text = this.value
+				}
+			}
+			document.body.appendChild(box)
+			box.focus()
+		}
+
+
+<!-- Add node to figure -->
+		fig.addNode(node) 
 
 		<!-- Add nodes to dropdowns -->
 		var select = document.getElementById("startnodes")
@@ -160,9 +188,9 @@
 
 	</script>	
 	
-	<canvas id="canvas" rezise="true"  style="position:fixed;top:0px;left:0px;width:80%;border:1px solid #d3d3d3"></canvas>
+	<canvas id="canvas" rezise="true"  style="position:relative;top:0px;left:0px;"></canvas>
 	
-	<div style="position:fixed;top:10px;right:50px"> 
+	<div id="menu" style="position:absolute;top:0px;right:0px;border:1px solid #d3d3d3;padding: 20px;display: block;"> 
 		<div style="border: 1px solid green">
 		<br/><br/>
 		<b style="padding:10px">Select start node :</b> <select id="startnodes" name="startnodes"></select>
@@ -171,7 +199,7 @@
 		<br/><br/>
 		</div>
 
-		<br/><br/>
+		<br/>
 
 		<div style="border: 1px solid green">
 		<br/><br/>
@@ -183,14 +211,17 @@
 		<br/><br/>	
 		</div>
 
-		<br/><br/>
+		<br/>
 		<input id="original" type="button" class = "button" value="Show Original" onclick="Original(fig)"></input>
-		<br/><br/><br/><br/>
+		<br/><br/><br/>
 		<button id="clear" type="button" class = "button" onclick="ClearAnimation()"> Clear Animation </button>
-		<br/><br/><br/><br/>
+		<br/><br/><br/>
 		<button id="refresh" type="button" class = "button" onclick="location.reload(true)"> Clear sketch </button>
+		<br/><br/><br/>
+		<button id="hidemenubtn" type="button" class = "button" onclick="toggleMenu()"> Hide Menu </button>
 
 	</div>
+	<button id="showmenubtn" style="position:absolute;top:0px;right:0px;display: none" type="button" class = "button" onclick="toggleMenu()"> Show Menu </button>
    </body>
  </html>
 
