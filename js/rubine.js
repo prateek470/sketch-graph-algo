@@ -1,7 +1,9 @@
+	//Start and EndPoint distance
 	function feature_f5(p){
 		return p[0].distance(p[p.length-1]);
 	}
 
+	//Stroke Length
 	function feature_f8(p){
 		var f8 = 0;		
 		var var1 = 0;
