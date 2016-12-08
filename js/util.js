@@ -2,6 +2,12 @@
 
 		var nodes = fig.getNodes
 		var edges = fig.getUndirected
+
+		if(nodes.length == 0 || edges.length > combinations(nodes.length,2)){
+			alert("Not a graph")
+			return
+		}
+		
 		if(reRunFlag == false){
 			Recognize(fig)
 			reRunFlag = true
@@ -133,10 +139,13 @@
 	}
 
 	function BFS(){
-
 		var nodes = fig.getNodes
 		var edges = fig.getUndirected
 
+		if(nodes.length == 0 || edges.length > combinations(nodes.length,2)){
+			alert("Not a graph")
+			return
+		}
 		var select = document.getElementById("startnodes")
 		fig.setStartNode = select.selectedIndex
 
@@ -315,6 +324,11 @@
 		var nodes = fig.getNodes
 		var edges = fig.getUndirected
 
+		if(nodes.length == 0 || edges.length > combinations(nodes.length,2)){
+			alert("Not a graph")
+			return
+		}
+
 		var select = document.getElementById("startnodes")
 		fig.setStartNode = select.selectedIndex
 
@@ -332,40 +346,38 @@
 
 	function runDFSOnGraph(nodes,edges){
 		var paths = []
+		var path = []
 		var visited = new Array(nodes.length)
 		for(var i=0;i<nodes.length;i++)
 			visited[i] = false
-		paths = paths.concat(runDFS(nodes,edges,visited,fig.getStartNode))
+		runDFS(nodes,edges,visited,fig.getStartNode,path)
+		paths = paths.concat(path)
+		path.length = 0
 		for(var i=0;i<nodes.length;i++){
-			if(visited[i] == false)
-				paths = paths.concat(runDFS(nodes,edges,visited,i))
+			if(visited[i] == false){
+				runDFS(nodes,edges,visited,i,path)
+			}
 		}
+		paths = paths.concat(path)
 		return paths
 	}
 
-	function runDFS(nodes,edges,visited,index){
-		var paths = []
-		var stack = []
-		stack.push(index)
+	function runDFS(nodes,edges,visited,index,paths){
 		visited[index] = true
 		paths.push(nodes[index].path)
+		var node = nodes[index]
 
-		while(stack.length > 0){
-			var node = nodes[stack.pop()] //nodes[Q.shift()]
-			for(var i = 0;i < node.getEdges.length; i++){
-				var edge = node.getEdges[i]
-				var othernode
-				if(edge.getStart.getId == node.getId)
-					othernode = edge.getEnd
-				else
-					othernode = edge.getStart
-				if(visited[othernode.getId] == false){
-					paths.push(edge.path)
-					paths.push(othernode.path)
-					stack.push(othernode.getId)
-					visited[othernode.getId] = true
-				}
+		for(var i = 0;i < node.getEdges.length; i++){
+			var edge = node.getEdges[i]
+			var othernode
+			if(edge.getStart.getId == node.getId)
+				othernode = edge.getEnd
+			else
+				othernode = edge.getStart
+
+			if(visited[othernode.getId] == false){
+				paths.push(edge.path)
+				runDFS(nodes,edges,visited,othernode.getId,paths)
 			}
 		}
-		return paths
 	}
