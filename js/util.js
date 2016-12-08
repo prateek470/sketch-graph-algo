@@ -162,7 +162,7 @@
 	// Usage!
 	if(index == paths.length)
 			return
-	sleep(1500).then(() => {
+	sleep(1000).then(() => {
 	    // Do something after the sleep!
 	    paths[index].data.originalStrokeColor = paths[index].strokeColor
 	    paths[index].strokeColor = 'black'
@@ -308,4 +308,64 @@
 	    menuBox.style.display = "block"
 	    document.getElementById('showmenubtn').style.display = "none"
 	  }
+	}
+
+	//Run DFS on Graph
+	function DFS() {
+		var nodes = fig.getNodes
+		var edges = fig.getUndirected
+
+		var select = document.getElementById("startnodes")
+		fig.setStartNode = select.selectedIndex
+
+		if(reRunFlag == false){
+			Recognize(fig)
+			reRunFlag = true
+		}
+		else{
+			ClearAnimation()
+		}
+		var paths = runDFSOnGraph(nodes,edges)
+		fig.oldpaths = paths
+		animate(paths,0)
+	}
+
+	function runDFSOnGraph(nodes,edges){
+		var paths = []
+		var visited = new Array(nodes.length)
+		for(var i=0;i<nodes.length;i++)
+			visited[i] = false
+		paths = paths.concat(runDFS(nodes,edges,visited,fig.getStartNode))
+		for(var i=0;i<nodes.length;i++){
+			if(visited[i] == false)
+				paths = paths.concat(runDFS(nodes,edges,visited,i))
+		}
+		return paths
+	}
+
+	function runDFS(nodes,edges,visited,index){
+		var paths = []
+		var stack = []
+		stack.push(index)
+		visited[index] = true
+		paths.push(nodes[index].path)
+
+		while(stack.length > 0){
+			var node = nodes[stack.pop()] //nodes[Q.shift()]
+			for(var i = 0;i < node.getEdges.length; i++){
+				var edge = node.getEdges[i]
+				var othernode
+				if(edge.getStart.getId == node.getId)
+					othernode = edge.getEnd
+				else
+					othernode = edge.getStart
+				if(visited[othernode.getId] == false){
+					paths.push(edge.path)
+					paths.push(othernode.path)
+					stack.push(othernode.getId)
+					visited[othernode.getId] = true
+				}
+			}
+		}
+		return paths
 	}
