@@ -266,7 +266,7 @@
 		}
 		console.log("Total : " + totalDeviation)
 		console.log("Contains center : " + containsCenter)
-		return points.length > 200 && feature_f5(points)<=25 && Math.abs(totalDeviation) < 1000 && containsCenter
+		return points.length > 20 && feature_f5(points)<=25 && Math.abs(totalDeviation) < 1000 && containsCenter
 	}  
 
 	function isLine(points){
