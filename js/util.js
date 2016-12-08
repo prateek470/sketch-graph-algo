@@ -7,14 +7,9 @@
 			alert("Not a graph")
 			return
 		}
-		
-		if(reRunFlag == false){
-			Recognize(fig)
-			reRunFlag = true
-		}
-		else{
-			ClearAnimation()
-		}
+
+		Recognize(fig)
+		ClearAnimation()
 
 		var paths = Shortest(nodes,edges)
 		fig.oldpaths = paths
@@ -149,13 +144,9 @@
 		var select = document.getElementById("startnodes")
 		fig.setStartNode = select.selectedIndex
 
-		if(reRunFlag == false){
-			Recognize(fig)
-			reRunFlag = true
-		}
-		else{
-			ClearAnimation()
-		}
+		Recognize(fig)
+		ClearAnimation()
+		
 		var paths = runBFSOnGraph(nodes,edges)
 		fig.oldpaths = paths
 		animate(paths,0)
@@ -275,11 +266,11 @@
 		}
 		console.log("Total : " + totalDeviation)
 		console.log("Contains center : " + containsCenter)
-		return points.length > 20 && feature_f5(points)<=25 && Math.abs(totalDeviation) < 1000 && containsCenter
+		return points.length > 50 && feature_f5(points)<=25 && Math.abs(totalDeviation) < 1000 && containsCenter
 	}  
 
 	function isLine(points){
-		return feature_f5(points)/feature_f8(points) > 0.9
+		return feature_f5(points)/feature_f8(points) > 0.9 && points[0].distance(points[points.length-1]) > 35
 	}
 
 	function Original(fig){
@@ -332,13 +323,9 @@
 		var select = document.getElementById("startnodes")
 		fig.setStartNode = select.selectedIndex
 
-		if(reRunFlag == false){
-			Recognize(fig)
-			reRunFlag = true
-		}
-		else{
-			ClearAnimation()
-		}
+		Recognize(fig)
+		ClearAnimation()
+
 		var paths = runDFSOnGraph(nodes,edges)
 		fig.oldpaths = paths
 		animate(paths,0)
