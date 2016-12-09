@@ -277,7 +277,7 @@
 		var BB = new srlib.core.data.container.BoundingBox(stroke);
 		var strokeLength = feature_f8(points);
 		var density = strokeLength/BB.getArea();
-		//
+		
 		var maxIntersections = 0;
 		var maxIntersectionComponentId = -1;
 		var maxInterType;
@@ -312,6 +312,7 @@
 
 		if(maxInterType == 'edge' && fig.getUndirected[maxIntersectionComponentId]!=null 
 			&& fig.getUndirected[maxIntersectionComponentId].path != null){
+			fig.getUndirected[maxIntersectionComponentId].text.remove()
 			fig.getUndirected[maxIntersectionComponentId].path.remove();
 			// fig.getUndirected[maxIntersectionComponentId].original.remove();
 			fig.getUndirected.pop(fig.getUndirected[maxIntersectionComponentId]);
