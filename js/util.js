@@ -273,6 +273,72 @@
 		return feature_f5(points)/feature_f8(points) > 0.9 && points[0].distance(points[points.length-1]) > 35
 	}
 
+	function isScribble(points,path){
+		var BB = new srlib.core.data.container.BoundingBox(stroke);
+		var strokeLength = feature_f8(points);
+		var density = strokeLength/BB.getArea();
+		//
+		var maxIntersections = 0;
+		var maxIntersectionComponentId = -1;
+		var maxInterType;
+
+		var edges = fig.getUndirected;
+		for(var i=0;i<edges.length;i++){
+			var edge = edges[i];
+			var intersections = edge.path.getIntersections(path);
+			if(maxIntersections < intersections.length){
+				maxIntersectionComponentId = edge.getId;
+				maxIntersections = intersections.length;
+				maxInterType = 'edge';
+			}
+		}
+
+		var nodes = fig.getNodes;
+		for(var i=0;i<nodes.length;i++){
+			var node = nodes[i];
+			var intersections = node.path.getIntersections(path);
+			if(maxIntersections < intersections.length){
+				maxIntersectionComponentId = node.getId;
+				maxIntersections = intersections.length;
+				maxInterType = 'node';
+			}
+		}
+		console.log(maxIntersections);
+		console.log(strokeLength/BB.getArea());
+
+		if (density < 0.1 || maxIntersections<=2){
+			return false; // not scribble
+		}
+
+		if(maxInterType == 'edge' && fig.getUndirected[maxIntersectionComponentId]!=null 
+			&& fig.getUndirected[maxIntersectionComponentId].path != null){
+			fig.getUndirected[maxIntersectionComponentId].path.remove();
+			// fig.getUndirected[maxIntersectionComponentId].original.remove();
+			fig.getUndirected.pop(fig.getUndirected[maxIntersectionComponentId]);
+		}
+			
+		//Remove Node and all edges
+		else if(maxInterType == 'node' && fig.getNodes[maxIntersectionComponentId] != null
+			&& fig.getNodes[maxIntersectionComponentId].path != null){
+			// var node = fig.getNodes[maxIntersectionComponentId];
+			// console.log(node.getEdges.length)
+			// for(var i=0;i<node.getEdges.length;i++){
+			// 	var edge = node.getEdges[i];
+			// 	if(edge.getStart.getId == node.getId || edge.getEnd.getId == node.getId){
+			// 		fig.getUndirected[edge.getId].path.remove();
+			// 		fig.getUndirected[edge.getId].original.remove();
+			// 		fig.getUndirected.pop(fig.getUndirected[edge.getId]);
+			// 	}
+			// }
+			// fig.getNodes[maxIntersectionComponentId].path.remove();
+			// fig.getNodes[maxIntersectionComponentId].original.remove();
+			// fig.getNodes.pop(fig.getNodes[maxIntersectionComponentId]);
+		}
+		console.log(fig.getUndirected.length);
+		console.log(fig.getNodes.length);
+		return true;
+	}
+
 	function Original(fig){
 		var nodes = fig.getNodes
 		var edges = fig.getUndirected
