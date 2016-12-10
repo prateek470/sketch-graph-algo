@@ -29,11 +29,21 @@
 	<canvas id="canvas" rezise="true"  style="position:relative;top:0px;left:0px;"></canvas>
 	
 	<div id="menu" style="position:absolute;top:0px;right:0px;border:1px solid #d3d3d3;padding: 20px;display: block;"> 
+
+		<b style="padding:10px">Diagram Type :</b> <!-- <select id="diagramtype" name="diagramtype"></select> -->
+		<br/>
+		<label>
+		    <input type="radio" id="directedgraph" name="mode" value="create" onclick="directedGraph(fig)">
+		    	<i>Directed</i>
+		    <input type="radio" id="undirectedgraph" name="mode" value="create" checked onclick="undirectedGraph(fig)">
+		    	<i>Un-directed</i>
+		</label>
+
+		<br/><br/>
 		<div style="border: 1px solid green">
 		<br/>
 		<b style="padding:10px">Select start node :</b> <select id="startnodes" name="startnodes"></select>
 		<br/>
-		
 		<div style="padding:10px"><input id="recognize" type="button" class = "button" value="Run BFS" onclick="BFS(fig)"></input></div>
 		<br/>
 		<div style="padding:10px"><input id="recognize" type="button" class = "button" value="Run DFS" onclick="DFS(fig)"></input></div>
@@ -47,7 +57,7 @@
 		<b style="padding:10px">Shortest path between :</b> <br/><br/>
 		<b style="padding:10px">Source :</b> <select id="sourcenode" name="sourcenode"></select> <br/><br/>
 		<b style="padding:10px">Destination :</b> <select id="destnode" name="destnode"></select>
-		<br/><br/>
+		<br/>
 		<div style="padding:10px"><input id="shortest" type="button" class = "button" value="Shortest Path" onclick="RunShortestPath(fig)"></input></div>
 		<br/><br/>	
 		</div>
