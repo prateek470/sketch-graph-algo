@@ -28,10 +28,15 @@
 	
 	<canvas id="canvas" rezise="true"  style="position:relative;top:0px;left:0px;"></canvas>
 	
+	<div id="title" style="position:absolute;top:0px;left:10px;border:10px;padding: 1px;display: block;"> 
+		<h2>Sketch a Graph</h2>
+		by Surya, Aman and Prateek
+	</div>
+
 	<div id="menu" style="position:absolute;top:0px;right:0px;border:1px solid #d3d3d3;padding: 20px;display: block;"> 
 
-		<b style="padding:10px">Diagram Type :</b> <!-- <select id="diagramtype" name="diagramtype"></select> -->
-		<br/>
+		<b style="padding:1px">Graph Type :</b> <!-- <select id="diagramtype" name="diagramtype"></select> -->
+		<br/><br/>
 		<label>
 		    <input type="radio" id="directedgraph" name="mode" value="create" onclick="directedGraph(fig)">
 		    	<i>Directed</i>

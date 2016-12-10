@@ -77,8 +77,13 @@
 				var othernode
 				if(edge.getStart.getId == node.getId)
 					othernode = edge.getEnd
-				else
-					othernode = edge.getStart
+				else{
+					if(edge.isDirectedEdge){
+						continue
+					} else {
+						othernode = edge.getStart
+					}
+				}
 				if( visited[othernode.getId] == false){
 					if(othernode.path.data.priority > node.path.data.priority + edge.getValue){
 						othernode.path.data.priority = node.path.data.priority + edge.getValue
