@@ -1,3 +1,14 @@
+function onResize(event) {
+	// Whenever the window is resized, recenter the path:
+	path.position = view.center;
+}
+
+var mouseMovepath = new Path.Circle({
+    center: [0, 0],
+    radius: 5,
+    fillColor: 'yellow'
+});
+
 function onMouseDown(event) {
 	// PaperJS add a new Path object and initial starting point
 	path = new Path();
@@ -26,12 +37,6 @@ function onMouseDrag(event) {
 	stroke.addPoint(point);
 }
 
-var mouseMovepath = new Path.Circle({
-    center: [0, 0],
-    radius: 5,
-    fillColor: 'yellow'
-});
-
 function onMouseMove(event) {
 	// Whenever the user moves the mouse, move the path
     // to that position:
@@ -56,7 +61,7 @@ function onMouseUp(event) {
  		path.remove()
  	}
  	// Circle
- 	else if(isCircle(points,path)){  
+ 	else if(isCircle(points,path)){
 		var BB = new srlib.core.data.container.BoundingBox(stroke);
 		var center = new Point( ((BB.getMaxX() + BB.getMinX()  )/2  ) ,( ( BB.getMaxY() + BB.getMinY() )/2 ) )
 		var myCircle = new Path.Circle(center, 25);
@@ -129,9 +134,22 @@ function onMouseUp(event) {
 	}
 	// <!-- Line -->
 	else if(isLine(points)){
+		var isDirectedEdge = document.getElementById("directedgraph").checked;
 		var myLine = new Path.Line(points[0],points[points.length-1])
 		myLine.strokeColor = 'blue';
 		path.visible = false;
+
+		if(isDirectedEdge){
+			path.simplify(10); 
+		    var point = path.getPointAt(path.length)
+		    var vector  = point.subtract(path.getPointAt(path.length/2)); 
+		    var arrowVector = vector.normalize(12);
+		    var arrowPath = new Path({
+		      segments: [point.add(arrowVector.rotate(145)), point, point.add(arrowVector.rotate(-145))],
+		      fillColor: 'blue',
+		      strokeWidth: 1,              
+		    });
+		}
 
 		// <!-- Update model -->
 		var edge = new Edge(fig.getUndirected.length)
@@ -139,6 +157,11 @@ function onMouseUp(event) {
 		edge.endpoints.push(points[0])
 		edge.endpoints.push(points[points.length-1])
 		edge.path = myLine
+		edge.arrowPath = arrowPath //only in case of directed graph
+		if(isDirectedEdge)
+			edge.isDirectedEdge = true
+		else
+			edge.isDirectedEdge = false
 		edge.original = path
 		fig.addUndirected(edge)
 

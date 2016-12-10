@@ -77,8 +77,13 @@
 				var othernode
 				if(edge.getStart.getId == node.getId)
 					othernode = edge.getEnd
-				else
-					othernode = edge.getStart
+				else{
+					if(edge.isDirectedEdge){
+						continue
+					} else {
+						othernode = edge.getStart
+					}
+				}
 				if( visited[othernode.getId] == false){
 					if(othernode.path.data.priority > node.path.data.priority + edge.getValue){
 						othernode.path.data.priority = node.path.data.priority + edge.getValue
@@ -129,10 +134,14 @@
 
 		for(var i = 0; i < edges.length; i++){
 			var edge = edges[i]
+			
 			matrix[edge.getStart.getId][edge.getEnd.getId] = 1
-			matrix[edge.getEnd.getId][edge.getStart.getId] = 1
+			if(document.getElementById("undirectedgraph").checked){
+				matrix[edge.getEnd.getId][edge.getStart.getId] = 1
+			}
 		}
 
+		// fig.setGraphMatrix(matrix)
 		console.log(JSON.stringify(matrix))
 		
 	}
@@ -201,10 +210,16 @@
 			for(var i = 0;i < node.getEdges.length; i++){
 				var edge = node.getEdges[i]
 				var othernode
+
 				if(edge.getStart.getId == node.getId)
 					othernode = edge.getEnd
-				else
-					othernode = edge.getStart
+				else{
+					if(edge.isDirectedEdge){
+						continue
+					} else {
+						othernode = edge.getStart
+					}
+				}
 				if( visited[othernode.getId] == false){
 					paths.push(edge.path)
 					paths.push(othernode.path)
@@ -461,12 +476,28 @@
 			var othernode
 			if(edge.getStart.getId == node.getId)
 				othernode = edge.getEnd
-			else
-				othernode = edge.getStart
+			else{
+				if(edge.isDirectedEdge){
+					continue
+				} else {
+					othernode = edge.getStart
+				}
+			}
 
 			if(visited[othernode.getId] == false){
 				paths.push(edge.path)
 				runDFS(nodes,edges,visited,othernode.getId,paths)
 			}
 		}
+	}
+
+	//For selecting the graph types
+	function directedGraph(fig){
+		// location.reload(true)
+		document.getElementById("directedgraph").checked = true;
+	}
+
+	function undirectedGraph(fig){
+		// location.reload(true)
+		document.getElementById("undirectedgraph").checked = true;
 	}
