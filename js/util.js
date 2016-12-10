@@ -103,6 +103,10 @@
 			alert("Not a graph")
 			return
 		}
+		// Clear edge-node relationship
+		for(var i = 0; i < nodes.length; i++){
+			nodes[i].setEdges = []
+		}
 
 		for(var i = 0; i < edges.length; i++){
 			var edge = edges[i]
@@ -264,8 +268,8 @@
 			if(maxDeviation < deviation)
 				maxDeviation = deviation
 		}
-		console.log("Total : " + totalDeviation)
-		console.log("Contains center : " + containsCenter)
+		// console.log("Total : " + totalDeviation)
+		// console.log("Contains center : " + containsCenter)
 		return points.length > 50 && feature_f5(points)<=25 && Math.abs(totalDeviation) < 1000 && containsCenter
 	}  
 
@@ -274,70 +278,48 @@
 	}
 
 	function isScribble(points,path){
-		var BB = new srlib.core.data.container.BoundingBox(stroke);
-		var strokeLength = feature_f8(points);
-		var density = strokeLength/BB.getArea();
+		var BB = new srlib.core.data.container.BoundingBox(stroke)
+		var strokeLength = feature_f8(points)
+		var density = strokeLength/BB.getArea()
 		
-		var maxIntersections = 0;
-		var maxIntersectionComponentId = -1;
-		var maxInterType;
+		var maxIntersections = 0
+		var maxIntersectionComponentId = -1
+		var maxInterType
 
-		var edges = fig.getUndirected;
+		var edges = fig.getUndirected
 		for(var i=0;i<edges.length;i++){
-			var edge = edges[i];
-			var intersections = edge.path.getIntersections(path);
+			var edge = edges[i]
+			var intersections = edge.path.getIntersections(path)
 			if(maxIntersections < intersections.length){
-				maxIntersectionComponentId = edge.getId;
-				maxIntersections = intersections.length;
-				maxInterType = 'edge';
+				maxIntersectionComponentId = edge.getId
+				maxIntersections = intersections.length
+				maxInterType = 'edge'
 			}
 		}
 
-		var nodes = fig.getNodes;
-		for(var i=0;i<nodes.length;i++){
-			var node = nodes[i];
-			var intersections = node.path.getIntersections(path);
-			if(maxIntersections < intersections.length){
-				maxIntersectionComponentId = node.getId;
-				maxIntersections = intersections.length;
-				maxInterType = 'node';
-			}
-		}
-		console.log(maxIntersections);
-		console.log(strokeLength/BB.getArea());
+		console.log("number of intersections of scribble : " + maxIntersections)
+		console.log("Density of scribble " + density)
 
-		if (density < 0.1 || maxIntersections<=2){
-			return false; // not scribble
+		if (edges.length == 0 || density < 0.1 || maxIntersections<=2){
+			return {"isScribble" : false,"componentId" : null,"type" : null} // not scribble
 		}
 
-		if(maxInterType == 'edge' && fig.getUndirected[maxIntersectionComponentId]!=null 
-			&& fig.getUndirected[maxIntersectionComponentId].path != null){
-			fig.getUndirected[maxIntersectionComponentId].text.remove()
-			fig.getUndirected[maxIntersectionComponentId].path.remove();
-			// fig.getUndirected[maxIntersectionComponentId].original.remove();
-			fig.getUndirected.pop(fig.getUndirected[maxIntersectionComponentId]);
+		return {"isScribble" : true,"componentId" : maxIntersectionComponentId,"type" : maxInterType}
+	}
+
+	function removeEdge(edgeId){
+		var edges = fig.getUndirected
+		var edgeToRemove = edges[edgeId]
+		edges.splice(edgeId,1)
+		for(var i = edgeId;i < edges.length;i++){
+			var edge = edges[i]
+			edge.setId = i
+			edge.text.data.edgeId = i
 		}
-			
-		//Remove Node and all edges
-		else if(maxInterType == 'node' && fig.getNodes[maxIntersectionComponentId] != null
-			&& fig.getNodes[maxIntersectionComponentId].path != null){
-			// var node = fig.getNodes[maxIntersectionComponentId];
-			// console.log(node.getEdges.length)
-			// for(var i=0;i<node.getEdges.length;i++){
-			// 	var edge = node.getEdges[i];
-			// 	if(edge.getStart.getId == node.getId || edge.getEnd.getId == node.getId){
-			// 		fig.getUndirected[edge.getId].path.remove();
-			// 		fig.getUndirected[edge.getId].original.remove();
-			// 		fig.getUndirected.pop(fig.getUndirected[edge.getId]);
-			// 	}
-			// }
-			// fig.getNodes[maxIntersectionComponentId].path.remove();
-			// fig.getNodes[maxIntersectionComponentId].original.remove();
-			// fig.getNodes.pop(fig.getNodes[maxIntersectionComponentId]);
-		}
-		console.log(fig.getUndirected.length);
-		console.log(fig.getNodes.length);
-		return true;
+		edgeToRemove.text.remove()
+		edgeToRemove.original.remove()
+		edgeToRemove.path.remove()
+		console.log(edges)
 	}
 
 	function Original(fig){

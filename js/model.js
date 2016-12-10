@@ -82,6 +82,10 @@
 				return this.id
 			}
 
+			set setId(value){
+				this.id = value
+			}
+
 			get getStart() {
 				return this.start
 			}
