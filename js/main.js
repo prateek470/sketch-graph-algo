@@ -42,15 +42,18 @@ function onMouseMove(event) {
 function onMouseUp(event) {	
 	
 	// Add evaluation / recognition functions or whatever you want here!
-	var points = stroke.getPoints();
+	var points = stroke.getPoints()
 	var scribbleResult = isScribble(points,path)
 	
 	// Scribble detection
  	if(scribbleResult["isScribble"] == true){
  		if(scribbleResult["type"] == "edge"){
  			removeEdge(scribbleResult["componentId"])
- 			path.remove()
  		}
+ 		else{
+ 			removeNode(scribbleResult["componentId"])
+ 		}
+ 		path.remove()
  	}
  	// Circle
  	else if(isCircle(points,path)){  
@@ -71,7 +74,7 @@ function onMouseUp(event) {
 		text.fillColor = 'black';
 		text.fontSize = 12
 		text.justification = 'center'
-		node.setName = 	String.fromCharCode('A'.charCodeAt() + node.getId)
+		node.setName = 	getNextNodeLabel()
 		text.content = node.getName
 		text.data.nodeId = node.getId
 		text.onClick = function(){
@@ -98,6 +101,8 @@ function onMouseUp(event) {
 			box.focus()
 		}
 
+		// Associate node with text
+		node.text = text
 
 // <!-- Add node to figure -->
 		fig.addNode(node) 

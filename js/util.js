@@ -297,10 +297,21 @@
 			}
 		}
 
+		var nodes = fig.getNodes
+		for(var i=0;i<nodes.length;i++){
+			var node = nodes[i]
+			var intersections = node.path.getIntersections(path)
+			if(maxIntersections < intersections.length){
+				maxIntersectionComponentId = node.getId
+				maxIntersections = intersections.length
+				maxInterType = 'node'
+			}
+		}
+
 		console.log("number of intersections of scribble : " + maxIntersections)
 		console.log("Density of scribble " + density)
 
-		if (edges.length == 0 || density < 0.1 || maxIntersections<=2){
+		if ((nodes.length == 0 && edges.length == 0) || density < 0.1 || maxIntersections<=2){
 			return {"isScribble" : false,"componentId" : null,"type" : null} // not scribble
 		}
 
@@ -309,17 +320,59 @@
 
 	function removeEdge(edgeId){
 		var edges = fig.getUndirected
-		var edgeToRemove = edges[edgeId]
-		edges.splice(edgeId,1)
-		for(var i = edgeId;i < edges.length;i++){
-			var edge = edges[i]
-			edge.setId = i
-			edge.text.data.edgeId = i
+		if(edgeId >= 0 && edgeId < edges.length){
+			var edgeToRemove = edges[edgeId]
+			edges.splice(edgeId,1)
+			for(var i = edgeId;i < edges.length;i++){
+				var edge = edges[i]
+				edge.setId = i
+				edge.text.data.edgeId = i
+			}
+			edgeToRemove.setId = -1
+			edgeToRemove.text.remove()
+			edgeToRemove.original.remove()
+			edgeToRemove.path.remove()
+			console.log(edges)
 		}
-		edgeToRemove.text.remove()
-		edgeToRemove.original.remove()
-		edgeToRemove.path.remove()
-		console.log(edges)
+	}
+
+	function removeNode(nodeId){
+		Recognize(fig)
+		var nodes = fig.getNodes
+		var nodeToRemove = nodes[nodeId]
+		nodes.splice(nodeId,1)
+		for(var i = nodeId;i < nodes.length;i++){
+			var node = nodes[i]
+			node.setId = i
+			node.text.data.nodeId = i
+		}
+
+		// Remove associated edges
+		var edges = nodeToRemove.getEdges
+		for(var i=0;i<edges.length;i++){
+			var edge = edges[i]
+			removeEdge(edge.getId)
+		}
+
+		// Remove node from all dropdowns
+		document.getElementById("startnodes").remove(nodeToRemove.getId)
+		document.getElementById("sourcenode").remove(nodeToRemove.getId)
+		document.getElementById("destnode").remove(nodeToRemove.getId)
+
+		// Remove node,text,original
+		nodeToRemove.text.remove()
+		nodeToRemove.original.remove()
+		nodeToRemove.path.remove()
+		console.log(nodes)
+	}
+
+	function getNextNodeLabel(){
+		var label = String.fromCharCode('A'.charCodeAt() + (fig.totalNodeCount%26))
+		if(fig.totalNodeCount >= 26){
+			label = 'A' + label
+		}
+		fig.totalNodeCount = fig.totalNodeCount + 1
+		return label
 	}
 
 	function Original(fig){

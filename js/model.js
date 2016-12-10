@@ -14,6 +14,10 @@
 				return this.id
 			}
 
+			set setId(value) {
+				this.id = value
+			}
+
 			get getName() {
 				if(!this.name){
 					this.name = "A"
