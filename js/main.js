@@ -1,6 +1,6 @@
 function onResize(event) {
 	// Whenever the window is resized, recenter the path:
-	path.position = view.center;
+	// path.position = view.center;
 }
 
 var mouseMovepath = new Path.Circle({
