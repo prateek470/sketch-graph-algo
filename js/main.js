@@ -30,6 +30,7 @@ function onMouseDown(event) {
 function onMouseDrag(event) {
 	// PaperJS add points to Path object on mouse drag
 	path.add(event.point);
+	mouseMovepath.position = event.point;
 	// SRLlib add points to Stroke on mouse drag
 	point = new srlib.core.data.container.Point(event.point.x,event.point.y)
 	sketch.addPoint(point);
@@ -47,14 +48,20 @@ function onMouseUp(event) {
 	
 	// Add evaluation / recognition functions or whatever you want here!
 	var points = stroke.getPoints();
-	// <!-- Circle -->
-	 
- 	if(isScribble(points,path)){
- 		path.remove()
- 	}else if(isCircle(points,path)){ 
+	var scribbleResult = isScribble(points,path)
+	
+	// Scribble detection
+ 	if(scribbleResult["isScribble"] == true){
+ 		if(scribbleResult["type"] == "edge"){
+ 			removeEdge(scribbleResult["componentId"])
+ 			path.remove()
+ 		}
+ 	}
+ 	// Circle
+ 	else if(isCircle(points,path)){
 		var BB = new srlib.core.data.container.BoundingBox(stroke);
 		var center = new Point( ((BB.getMaxX() + BB.getMinX()  )/2  ) ,( ( BB.getMaxY() + BB.getMinY() )/2 ) )
-		var myCircle = new Path.Circle(center, 30);
+		var myCircle = new Path.Circle(center, 25);
 		myCircle.strokeColor = 'red';
 		path.visible = false;
 
@@ -67,7 +74,7 @@ function onMouseUp(event) {
 // <!-- Add node name -->
 		var text = new PointText(center);
 		text.fillColor = 'black';
-		text.fontSize = 15
+		text.fontSize = 12
 		text.justification = 'center'
 		node.setName = 	String.fromCharCode('A'.charCodeAt() + node.getId)
 		text.content = node.getName
@@ -86,7 +93,7 @@ function onMouseUp(event) {
 			box.onkeyup = function(e){
 				if (e.keyCode == 13){
 					document.body.removeChild(box)
-					console.log(fig.getUndirected)
+					// console.log(fig.getUndirected)
 					document.getElementById("startnodes").options[this.id].text = this.value
 					document.getElementById("sourcenode").options[this.id].text = this.value
 					document.getElementById("destnode").options[this.id].text = this.value
