@@ -276,6 +276,9 @@
 		var maxDeviation = 0
 		var totalDeviation = 0
 		var containsCenter = path.contains(center)
+		var strokeLength = feature_f8(points)
+		var density = strokeLength/BB.getArea()
+
 		for(var i=0;i < points.length;i++){
 			var dist = points[i].distance(center)
 			var deviation = dist - radius
@@ -283,10 +286,41 @@
 			if(maxDeviation < deviation)
 				maxDeviation = deviation
 		}
-		// console.log("Total : " + totalDeviation)
-		// console.log("Contains center : " + containsCenter)
-		return points.length > 50 && feature_f5(points)<=25 && Math.abs(totalDeviation) < 1000 && containsCenter
+
+		return density<0.20 && points.length > 50 && feature_f5(points)<=25 && Math.abs(totalDeviation) < 1000 && containsCenter
 	}  
+
+	//Find Direction change ratio DCR value
+	function DCR(p){
+		var maxChange = 0
+		var avgChange = 0
+		
+		for(var i=1;i<p.length-1;i++){
+			var angle = 0
+			deltaxp = p[i+1].x - p[i].x;
+			deltayp = p[i+1].y - p[i].y;
+			deltaxp1 = p[i].x - p[i-1].x;
+			deltayp1 = p[i].y - p[i-1].y;
+			var1 = deltaxp * deltayp1 - deltaxp1 * deltayp;
+			var2 = deltaxp * deltaxp1 + deltayp * deltayp1;
+			if(var2 == 0){
+				if (var1>0)
+					angle = Math.atan(Infinity);
+				else
+					angle = Math.atan(-Infinity);
+			}
+			else{
+				angle += Math.atan(var1 / var2);
+			}
+			angle = Math.abs(angle)
+			avgChange += angle
+			if(Math.abs(angle)>maxChange)
+				maxChange = Math.abs(angle)
+		}
+		avgChange = avgChange/p.length
+
+		return maxChange/avgChange
+	}
 
 	function isLine(points){
 		return feature_f5(points)/feature_f8(points) > 0.9 && points[0].distance(points[points.length-1]) > 35
@@ -347,6 +381,7 @@
 			edgeToRemove.text.remove()
 			edgeToRemove.original.remove()
 			edgeToRemove.path.remove()
+			edgeToRemove.arrowPath.remove()
 			console.log(edges)
 		}
 	}
