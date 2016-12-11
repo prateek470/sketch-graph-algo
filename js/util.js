@@ -287,7 +287,7 @@
 				maxDeviation = deviation
 		}
 
-		return density<0.20 && points.length > 50 && feature_f5(points)<=25 && Math.abs(totalDeviation) < 1000 && containsCenter
+		return density<0.30 && points.length > 50 && feature_f5(points)<=25 && Math.abs(totalDeviation) < 1000 && containsCenter
 	}  
 
 	//Find Direction change ratio DCR value
