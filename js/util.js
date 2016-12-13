@@ -543,3 +543,26 @@
 		// location.reload(true)
 		document.getElementById("undirectedgraph").checked = true;
 	}
+
+	//Functions for Minimum spanning tree
+	//Kruskal’s minimum spanning tree algorithm
+	function MST_Prim(fig){
+		var nodes = fig.getNodes
+		var edges = fig.getUndirected
+
+		if(nodes.length == 0 || edges.length > combinations(nodes.length,2)){
+			alert("Not a graph")
+			return
+		}
+
+		Recognize(fig)
+		ClearAnimation()
+
+		var paths = MinimumSpanningTreeKruskal(nodes,edges)
+		fig.oldpaths = paths
+		animate(paths,0)
+	}
+
+	function MinimumSpanningTreePrim(nodes,edges){
+
+	}
