@@ -35,8 +35,10 @@
 	</div>
 
 	<div id="menu" style="position:absolute;top:0px;right:0px;border:1px solid #d3d3d3;padding: 20px;display: block;"> 
+		<button id="hidemenubtn" style="position:absolute;top:0px;right:0px" type="button" class = "button" onclick="toggleMenu()"> Hide Menu </button>
+		<br/>
 
-		<b style="padding:1px">Graph Type :</b> <!-- <select id="diagramtype" name="diagramtype"></select> -->
+		<b style="padding:0px">Graph Type</b> <!-- <select id="diagramtype" name="diagramtype"></select> -->
 		<br/><br/>
 		<label>
 		    <input type="radio" id="directedgraph" name="mode" value="create" onclick="directedGraph(fig)">
@@ -75,7 +77,7 @@
 		<br/><br/><br/>
 		<button id="refresh" type="button" class = "button" onclick="location.reload(true)"> Clear sketch </button>
 		<br/><br/><br/>
-		<button id="hidemenubtn" type="button" class = "button" onclick="toggleMenu()"> Hide Menu </button>
+		
 
 	</div>
 	<button id="showmenubtn" style="position:absolute;top:0px;right:0px;display: none" type="button" class = "button" onclick="toggleMenu()"> Show Menu </button>
