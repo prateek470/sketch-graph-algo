@@ -60,6 +60,8 @@
 					var prevEdge = edges[node.path.data.prevEdgeId]
 					paths.push(node.path)
 					paths.push(prevEdge.path)
+					if(typeof prevEdge.arrowPath != 'undefined')
+						paths.push(prevEdge.arrowPath)
 					if(prevEdge.getStart.getId == node.getId)
 						node = prevEdge.getEnd
 					else
@@ -327,6 +329,8 @@
 				}
 				if( visited[othernode.getId] == false){
 					paths.push(edge.path)
+					if(typeof edge.arrowPath != 'undefined')
+						paths.push(edge.arrowPath)
 					paths.push(othernode.path)
 					Q.push(othernode.getId)
 					visited[othernode.getId] = true
@@ -486,7 +490,8 @@
 			edgeToRemove.text.remove()
 			edgeToRemove.original.remove()
 			edgeToRemove.path.remove()
-			edgeToRemove.arrowPath.remove()
+			if(typeof edgeToRemove.arrowPath != 'undefined')
+				edgeToRemove.arrowPath.remove()
 			console.log(edges)
 		}
 	}
@@ -626,6 +631,8 @@
 
 			if(visited[othernode.getId] == false){
 				paths.push(edge.path)
+				if(typeof edge.arrowPath != 'undefined')
+					paths.push(edge.arrowPath)
 				runDFS(nodes,edges,visited,othernode.getId,paths)
 			}
 		}
@@ -640,4 +647,27 @@
 	function undirectedGraph(fig){
 		// location.reload(true)
 		document.getElementById("undirectedgraph").checked = true;
+	}
+
+	//Functions for Minimum spanning tree
+	//Kruskal’s minimum spanning tree algorithm
+	function MST_Prim(fig){
+		var nodes = fig.getNodes
+		var edges = fig.getUndirected
+
+		if(nodes.length == 0 || edges.length > combinations(nodes.length,2)){
+			alert("Not a graph")
+			return
+		}
+
+		Recognize(fig)
+		ClearAnimation()
+
+		var paths = MinimumSpanningTreeKruskal(nodes,edges)
+		fig.oldpaths = paths
+		animate(paths,0)
+	}
+
+	function MinimumSpanningTreePrim(nodes,edges){
+
 	}
