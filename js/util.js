@@ -60,6 +60,8 @@
 					var prevEdge = edges[node.path.data.prevEdgeId]
 					paths.push(node.path)
 					paths.push(prevEdge.path)
+					if(typeof prevEdge.arrowPath != 'undefined')
+						paths.push(prevEdge.arrowPath)
 					if(prevEdge.getStart.getId == node.getId)
 						node = prevEdge.getEnd
 					else
@@ -77,8 +79,13 @@
 				var othernode
 				if(edge.getStart.getId == node.getId)
 					othernode = edge.getEnd
-				else
-					othernode = edge.getStart
+				else{
+					if(edge.isDirectedEdge){
+						continue
+					} else {
+						othernode = edge.getStart
+					}
+				}
 				if( visited[othernode.getId] == false){
 					if(othernode.path.data.priority > node.path.data.priority + edge.getValue){
 						othernode.path.data.priority = node.path.data.priority + edge.getValue
@@ -93,6 +100,111 @@
 		return paths
 	}
 
+	function RunMST(fig){
+
+		var nodes = fig.getNodes
+		var edges = fig.getUndirected
+
+		if(nodes.length == 0 || edges.length > combinations(nodes.length,2)){
+			alert("Not a graph")
+			return
+		}
+
+		Recognize(fig)
+		ClearAnimation()
+
+		var select = document.getElementById("startnodes")
+		fig.setStartNode = select.selectedIndex
+
+		if(IsGraphConnected(nodes,edges)){
+			var paths = RunPrimsMST(nodes,edges)
+			fig.oldpaths = paths
+			animate(paths,0)
+		}
+		else{
+			alert('Graph is not connected')
+		}
+	}
+
+	function RunPrimsMST(nodes,edges){
+		var paths = []
+		var src = fig.getStartNode //Change to dynamic later
+
+		var queue = new PriorityQueue();
+		for(var i = 0; i < nodes.length; i++){
+			var priority
+			if(i==src){
+				priority = 0
+			}
+			else{
+				priority = Infinity
+			}
+			nodes[i].path.data.prevEdgeId = -1
+			queue.enqueue(nodes[i], priority)	
+		}
+		
+		var visited = new Array(nodes.length)
+		for(var i=0;i<nodes.length;i++)
+			visited[i] = false
+
+		while(!queue.isEmpty()){
+			var node = queue.dequeue()
+			if(visited[node.getId]==true)
+				continue
+			visited[node.getId]=true
+
+			// Push node path and connecting edge path
+			if(node.path.data.prevEdgeId != -1){
+				var prevEdge = edges[node.path.data.prevEdgeId]
+				paths.push(prevEdge.path)
+			}
+			paths.push(node.path)
+
+			// Relax neighboring edges
+			for(var i = 0;i < node.getEdges.length; i++){
+				var edge = node.getEdges[i]
+				var othernode
+				if(edge.getStart.getId == node.getId)
+					othernode = edge.getEnd
+				else{
+					if(edge.isDirectedEdge){
+						continue
+					} else {
+						othernode = edge.getStart
+					}
+				}
+				if( visited[othernode.getId] == false){
+					if(othernode.path.data.prevEdgeId == -1){
+						othernode.path.data.prevEdgeId = edge.getId
+						queue.enqueue(othernode,edge.getValue)
+					}
+					else{
+						if(edge.getValue < edges[othernode.path.data.prevEdgeId].getValue){
+							othernode.path.data.prevEdgeId = edge.getId
+							queue.enqueue(othernode,edge.getValue)
+						}
+					}
+				}
+
+			}
+
+		}
+		return paths
+	}
+
+	function IsGraphConnected(nodes,edges){
+		var paths = []
+		var visited = new Array(nodes.length)
+		for(var i=0;i<nodes.length;i++)
+			visited[i] = false
+		runBFS(nodes,edges,visited,fig.getStartNode)
+		for(var i=0;i<nodes.length;i++){
+			if(visited[i] == false)
+				return false
+		}
+		return true
+	}
+
 	function Recognize(fig){
 		console.log("Num of nodes : " + fig.getNodes.length)
 		console.log("Num of edges : " + fig.getUndirected.length)
@@ -102,6 +214,10 @@
 		if(nodes.length == 0 || edges.length > combinations(nodes.length,2)){
 			alert("Not a graph")
 			return
+		}
+		// Clear edge-node relationship
+		for(var i = 0; i < nodes.length; i++){
+			nodes[i].setEdges = []
 		}
 
 		for(var i = 0; i < edges.length; i++){
@@ -125,10 +241,14 @@
 
 		for(var i = 0; i < edges.length; i++){
 			var edge = edges[i]
+			
 			matrix[edge.getStart.getId][edge.getEnd.getId] = 1
-			matrix[edge.getEnd.getId][edge.getStart.getId] = 1
+			if(document.getElementById("undirectedgraph").checked){
+				matrix[edge.getEnd.getId][edge.getStart.getId] = 1
+			}
 		}
 
+		// fig.setGraphMatrix(matrix)
 		console.log(JSON.stringify(matrix))
 		
 	}
@@ -197,12 +317,20 @@
 			for(var i = 0;i < node.getEdges.length; i++){
 				var edge = node.getEdges[i]
 				var othernode
+
 				if(edge.getStart.getId == node.getId)
 					othernode = edge.getEnd
-				else
-					othernode = edge.getStart
+				else{
+					if(edge.isDirectedEdge){
+						continue
+					} else {
+						othernode = edge.getStart
+					}
+				}
 				if( visited[othernode.getId] == false){
 					paths.push(edge.path)
+					if(typeof edge.arrowPath != 'undefined')
+						paths.push(edge.arrowPath)
 					paths.push(othernode.path)
 					Q.push(othernode.getId)
 					visited[othernode.getId] = true
@@ -257,6 +385,9 @@
 		var maxDeviation = 0
 		var totalDeviation = 0
 		var containsCenter = path.contains(center)
+		var strokeLength = feature_f8(points)
+		var density = strokeLength/BB.getArea()
+
 		for(var i=0;i < points.length;i++){
 			var dist = points[i].distance(center)
 			var deviation = dist - radius
@@ -264,13 +395,144 @@
 			if(maxDeviation < deviation)
 				maxDeviation = deviation
 		}
-		console.log("Total : " + totalDeviation)
-		console.log("Contains center : " + containsCenter)
-		return points.length > 50 && feature_f5(points)<=25 && Math.abs(totalDeviation) < 1000 && containsCenter
+
+		return density<0.30 && points.length > 50 && feature_f5(points)<=25 && Math.abs(totalDeviation) < 1000 && containsCenter
 	}  
+
+	//Find Direction change ratio DCR value
+	function DCR(p){
+		var maxChange = 0
+		var avgChange = 0
+		
+		for(var i=1;i<p.length-1;i++){
+			var angle = 0
+			deltaxp = p[i+1].x - p[i].x;
+			deltayp = p[i+1].y - p[i].y;
+			deltaxp1 = p[i].x - p[i-1].x;
+			deltayp1 = p[i].y - p[i-1].y;
+			var1 = deltaxp * deltayp1 - deltaxp1 * deltayp;
+			var2 = deltaxp * deltaxp1 + deltayp * deltayp1;
+			if(var2 == 0){
+				if (var1>0)
+					angle = Math.atan(Infinity);
+				else
+					angle = Math.atan(-Infinity);
+			}
+			else{
+				angle += Math.atan(var1 / var2);
+			}
+			angle = Math.abs(angle)
+			avgChange += angle
+			if(Math.abs(angle)>maxChange)
+				maxChange = Math.abs(angle)
+		}
+		avgChange = avgChange/p.length
+
+		return maxChange/avgChange
+	}
 
 	function isLine(points){
 		return feature_f5(points)/feature_f8(points) > 0.9 && points[0].distance(points[points.length-1]) > 35
+	}
+
+	function isScribble(points,path){
+		var BB = new srlib.core.data.container.BoundingBox(stroke)
+		var strokeLength = feature_f8(points)
+		var density = strokeLength/BB.getArea()
+		
+		var maxIntersections = 0
+		var maxIntersectionComponentId = -1
+		var maxInterType
+
+		var edges = fig.getUndirected
+		for(var i=0;i<edges.length;i++){
+			var edge = edges[i]
+			var intersections = edge.path.getIntersections(path)
+			if(maxIntersections < intersections.length){
+				maxIntersectionComponentId = edge.getId
+				maxIntersections = intersections.length
+				maxInterType = 'edge'
+			}
+		}
+
+		var nodes = fig.getNodes
+		for(var i=0;i<nodes.length;i++){
+			var node = nodes[i]
+			var intersections = node.path.getIntersections(path)
+			if(maxIntersections < intersections.length){
+				maxIntersectionComponentId = node.getId
+				maxIntersections = intersections.length
+				maxInterType = 'node'
+			}
+		}
+
+		console.log("number of intersections of scribble : " + maxIntersections)
+		console.log("Density of scribble " + density)
+
+		if ((nodes.length == 0 && edges.length == 0) || density < 0.1 || maxIntersections<=2){
+			return {"isScribble" : false,"componentId" : null,"type" : null} // not scribble
+		}
+
+		return {"isScribble" : true,"componentId" : maxIntersectionComponentId,"type" : maxInterType}
+	}
+
+	function removeEdge(edgeId){
+		var edges = fig.getUndirected
+		if(edgeId >= 0 && edgeId < edges.length){
+			var edgeToRemove = edges[edgeId]
+			edges.splice(edgeId,1)
+			for(var i = edgeId;i < edges.length;i++){
+				var edge = edges[i]
+				edge.setId = i
+				edge.text.data.edgeId = i
+			}
+			edgeToRemove.setId = -1
+			edgeToRemove.text.remove()
+			edgeToRemove.original.remove()
+			edgeToRemove.path.remove()
+			if(typeof edgeToRemove.arrowPath != 'undefined')
+				edgeToRemove.arrowPath.remove()
+			console.log(edges)
+		}
+	}
+
+	function removeNode(nodeId){
+		Recognize(fig)
+		var nodes = fig.getNodes
+		var nodeToRemove = nodes[nodeId]
+		nodes.splice(nodeId,1)
+		for(var i = nodeId;i < nodes.length;i++){
+			var node = nodes[i]
+			node.setId = i
+			node.text.data.nodeId = i
+		}
+
+		// Remove associated edges
+		var edges = nodeToRemove.getEdges
+		for(var i=0;i<edges.length;i++){
+			var edge = edges[i]
+			removeEdge(edge.getId)
+		}
+
+		// Remove node from all dropdowns
+		document.getElementById("startnodes").remove(nodeToRemove.getId)
+		document.getElementById("sourcenode").remove(nodeToRemove.getId)
+		document.getElementById("destnode").remove(nodeToRemove.getId)
+
+		// Remove node,text,original
+		nodeToRemove.text.remove()
+		nodeToRemove.original.remove()
+		nodeToRemove.path.remove()
+		console.log(nodes)
+	}
+
+	function getNextNodeLabel(){
+		var label = String.fromCharCode('A'.charCodeAt() + (fig.totalNodeCount%26))
+		if(fig.totalNodeCount >= 26){
+			label = 'A' + label
+		}
+		fig.totalNodeCount = fig.totalNodeCount + 1
+		return label
 	}
 
 	function Original(fig){
@@ -359,12 +621,30 @@
 			var othernode
 			if(edge.getStart.getId == node.getId)
 				othernode = edge.getEnd
-			else
-				othernode = edge.getStart
+			else{
+				if(edge.isDirectedEdge){
+					continue
+				} else {
+					othernode = edge.getStart
+				}
+			}
 
 			if(visited[othernode.getId] == false){
 				paths.push(edge.path)
+				if(typeof edge.arrowPath != 'undefined')
+					paths.push(edge.arrowPath)
 				runDFS(nodes,edges,visited,othernode.getId,paths)
 			}
 		}
+	}
+
+	//For selecting the graph types
+	function directedGraph(fig){
+		// location.reload(true)
+		document.getElementById("directedgraph").checked = true;
+	}
+
+	function undirectedGraph(fig){
+		// location.reload(true)
+		document.getElementById("undirectedgraph").checked = true;
 	}

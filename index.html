@@ -19,186 +19,45 @@
 		window.onload = function(){
 			fig = new Figure()
 			fig.oldpaths = []
+			fig.totalNodeCount = 0
 		}
 		</script>
 
 	</head>
 	<body>	
-	<script type="text/paperscript" canvas="canvas">
-			
-					
-	function onMouseDown(event) {
-		// PaperJS add a new Path object and initial starting point
-		path = new Path();
-		path.strokeColor = 'black';
-		path.strokeWidth = 2;
-		path.add(event.point);
-		
-		// SRLlib add a new Stroke object and initial starting point
-		stroke = new srlib.core.data.container.Stroke();
-		point = new srlib.core.data.container.Point(event.point.x,event.point.y)
-		if (typeof sketch == "undefined") {
-			sketch = new srlib.core.data.container.Sketch();
-		}
-		sketch.addStroke(stroke);
-		sketch.addPoint(point);
-		stroke.addPoint(point);
-	}
-
-	function onMouseDrag(event) {
-	// PaperJS add points to Path object on mouse drag
-	path.add(event.point);
-
-	// SRLlib add points to Stroke on mouse drag
-	point = new srlib.core.data.container.Point(event.point.x,event.point.y)
-	sketch.addPoint(point);
-	stroke.addPoint(point);
-	}
-
-
-
-
-	function onMouseUp(event) {	
-	
-	// Add evaluation / recognition functions or whatever you want here!
-	var points = stroke.getPoints();
-	<!-- Circle -->
- 	if(isCircle(points,path)){ 
-		var BB = new srlib.core.data.container.BoundingBox(stroke);
-		var center = new Point( ((BB.getMaxX() + BB.getMinX()  )/2  ) ,( ( BB.getMaxY() + BB.getMinY() )/2 ) )
-		var myCircle = new Path.Circle(center, 30);
-		myCircle.strokeColor = 'red';
-		path.visible = false;
-
-		<!-- Update model -->
-		var node  = new Node(fig.getNodes.length)
-		node.setCenter = new srlib.core.data.container.Point(center.x,center.y)
-		node.path = myCircle
-		node.original = path
-
-<!-- Add node name -->
-		var text = new PointText(center);
-		text.fillColor = 'black';
-		text.fontSize = 15
-		text.justification = 'center'
-		node.setName = 	String.fromCharCode('A'.charCodeAt() + node.getId)
-		text.content = node.getName
-		text.data.nodeId = node.getId
-		text.onClick = function(){
-			var box = document.createElement('input'); // creates the element
-			box.id = this.data.nodeId
-			box.style.position = 'absolute';  // position it
-			box.style.left = center.x;
-			box.style.top = center.y;  
-			box.style.width = 75
-			box.oninput = function(){
-				fig.getNodes[this.id].setName = this.value
-				text.content = fig.getNodes[this.id].getName
-			}
-			box.onkeyup = function(e){
-				if (e.keyCode == 13){
-					document.body.removeChild(box)
-					console.log(fig.getUndirected)
-					document.getElementById("startnodes").options[this.id].text = this.value
-					document.getElementById("sourcenode").options[this.id].text = this.value
-					document.getElementById("destnode").options[this.id].text = this.value
-				}
-			}
-			document.body.appendChild(box)
-			box.focus()
-		}
-
-
-<!-- Add node to figure -->
-		fig.addNode(node) 
-
-		<!-- Add nodes to dropdowns -->
-		var select = document.getElementById("startnodes")
-        var option = document.createElement('option')
-        option.text = node.getName
-        option.value = node.getId
-        select.add(option)
-
-        select = document.getElementById("sourcenode")
-        option = document.createElement('option')
-        option.text = node.getName
-        option.value = node.getId
-    	select.add(option)
-
-    	select = document.getElementById("destnode")
-    	option = document.createElement('option')
-        option.text = node.getName
-        option.value = node.getId
-    	select.add(option)
-
-	}
-	<!-- Line -->
-	else if(isLine(points)){
-		var myLine = new Path.Line(points[0],points[points.length-1])
-		myLine.strokeColor = 'blue';
-		path.visible = false;
-
-		<!-- Update model -->
-		var edge = new Edge(fig.getUndirected.length)
-		edge.endpoints = []
-		edge.endpoints.push(points[0])
-		edge.endpoints.push(points[points.length-1])
-		edge.path = myLine
-		edge.original = path
-		fig.addUndirected(edge)
-
-		<!-- Edge weight -->
-		var center = new Point ((points[0].getX()+points[points.length-1].getX())/2, (points[0].getY()+points[points.length-1].getY())/2)
-		var text = new PointText(center);
-		text.data.edgeId = edge.getId
-		text.fillColor = 'black';
-		text.fontSize = 15
-		text.justification = 'left'
-		text.content = 0
-		text.onClick = function(){
-			var box = document.createElement('input'); // creates the element
-			box.id = this.data.edgeId
-			box.style.position = 'absolute';  // position it
-			box.style.left = center.x;
-			box.style.top = center.y;  
-			box.style.width = 25
-			box.oninput = function(){
-				fig.getUndirected[this.id].setValue = parseInt(this.value)
-				text.content = fig.getUndirected[this.id].getValue
-			}
-			box.onkeyup = function(e){
-				if (e.keyCode == 13){
-					document.body.removeChild(box)
-					console.log(fig.getUndirected)
-				}
-			}
-			document.body.appendChild(box)
-			box.focus()
-		}
-	}
-	<!-- Not recognized -->
-	else{
-		path.removeSegments()
-	}
-	}
-
-
-
-
-	</script>	
+	<script type="text/paperscript" src="js/main.js" canvas="canvas"></script>	
 	
 	<canvas id="canvas" rezise="true"  style="position:relative;top:0px;left:0px;"></canvas>
 	
+	<div id="title" style="position:absolute;top:0px;left:10px;border:10px;padding: 1px;display: block;"> 
+		<h2>Sketch a Graph</h2>
+		by Surya, Aman and Prateek
+	</div>
+
 	<div id="menu" style="position:absolute;top:0px;right:0px;border:1px solid #d3d3d3;padding: 20px;display: block;"> 
+		<button id="hidemenubtn" style="position:absolute;top:0px;right:0px" type="button" class = "button" onclick="toggleMenu()"> Hide Menu </button>
+		<br/>
+
+		<b style="padding:0px">Graph Type</b> <!-- <select id="diagramtype" name="diagramtype"></select> -->
+		<br/><br/>
+		<label>
+		    <input type="radio" id="directedgraph" name="mode" value="create" onclick="directedGraph(fig)">
+		    	<i>Directed</i>
+		    <input type="radio" id="undirectedgraph" name="mode" value="create" checked onclick="undirectedGraph(fig)">
+		    	<i>Un-directed</i>
+		</label>
+
+		<br/><br/>
 		<div style="border: 1px solid green">
 		<br/>
 		<b style="padding:10px">Select start node :</b> <select id="startnodes" name="startnodes"></select>
 		<br/>
-		
 		<div style="padding:10px"><input id="recognize" type="button" class = "button" value="Run BFS" onclick="BFS(fig)"></input></div>
 		<br/>
 		<div style="padding:10px"><input id="recognize" type="button" class = "button" value="Run DFS" onclick="DFS(fig)"></input></div>
-		<br/><br/>
+		<br/>
+		<div style="padding:10px"><input id="MST" type="button" class = "button" value="MST" onclick="RunMST(fig)"></input></div>
+		<br/><br/>	
 		</div>
 
 		<br/>
@@ -208,7 +67,7 @@
 		<b style="padding:10px">Shortest path between :</b> <br/><br/>
 		<b style="padding:10px">Source :</b> <select id="sourcenode" name="sourcenode"></select> <br/><br/>
 		<b style="padding:10px">Destination :</b> <select id="destnode" name="destnode"></select>
-		<br/><br/>
+		<br/>
 		<div style="padding:10px"><input id="shortest" type="button" class = "button" value="Shortest Path" onclick="RunShortestPath(fig)"></input></div>
 		<br/><br/>	
 		</div>
@@ -220,7 +79,7 @@
 		<br/><br/><br/>
 		<button id="refresh" type="button" class = "button" onclick="location.reload(true)"> Clear sketch </button>
 		<br/><br/><br/>
-		<button id="hidemenubtn" type="button" class = "button" onclick="toggleMenu()"> Hide Menu </button>
+		
 
 	</div>
 	<button id="showmenubtn" style="position:absolute;top:0px;right:0px;display: none" type="button" class = "button" onclick="toggleMenu()"> Show Menu </button>
