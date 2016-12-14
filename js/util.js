@@ -98,6 +98,111 @@
 		return paths
 	}
 
+	function RunMST(fig){
+
+		var nodes = fig.getNodes
+		var edges = fig.getUndirected
+
+		if(nodes.length == 0 || edges.length > combinations(nodes.length,2)){
+			alert("Not a graph")
+			return
+		}
+
+		Recognize(fig)
+		ClearAnimation()
+
+		var select = document.getElementById("startnodes")
+		fig.setStartNode = select.selectedIndex
+
+		if(IsGraphConnected(nodes,edges)){
+			var paths = RunPrimsMST(nodes,edges)
+			fig.oldpaths = paths
+			animate(paths,0)
+		}
+		else{
+			alert('Graph is not connected')
+		}
+	}
+
+	function RunPrimsMST(nodes,edges){
+		var paths = []
+		var src = fig.getStartNode //Change to dynamic later
+
+		var queue = new PriorityQueue();
+		for(var i = 0; i < nodes.length; i++){
+			var priority
+			if(i==src){
+				priority = 0
+			}
+			else{
+				priority = Infinity
+			}
+			nodes[i].path.data.prevEdgeId = -1
+			queue.enqueue(nodes[i], priority)	
+		}
+		
+		var visited = new Array(nodes.length)
+		for(var i=0;i<nodes.length;i++)
+			visited[i] = false
+
+		while(!queue.isEmpty()){
+			var node = queue.dequeue()
+			if(visited[node.getId]==true)
+				continue
+			visited[node.getId]=true
+
+			// Push node path and connecting edge path
+			if(node.path.data.prevEdgeId != -1){
+				var prevEdge = edges[node.path.data.prevEdgeId]
+				paths.push(prevEdge.path)
+			}
+			paths.push(node.path)
+
+			// Relax neighboring edges
+			for(var i = 0;i < node.getEdges.length; i++){
+				var edge = node.getEdges[i]
+				var othernode
+				if(edge.getStart.getId == node.getId)
+					othernode = edge.getEnd
+				else{
+					if(edge.isDirectedEdge){
+						continue
+					} else {
+						othernode = edge.getStart
+					}
+				}
+				if( visited[othernode.getId] == false){
+					if(othernode.path.data.prevEdgeId == -1){
+						othernode.path.data.prevEdgeId = edge.getId
+						queue.enqueue(othernode,edge.getValue)
+					}
+					else{
+						if(edge.getValue < edges[othernode.path.data.prevEdgeId].getValue){
+							othernode.path.data.prevEdgeId = edge.getId
+							queue.enqueue(othernode,edge.getValue)
+						}
+					}
+				}
+
+			}
+
+		}
+		return paths
+	}
+
+	function IsGraphConnected(nodes,edges){
+		var paths = []
+		var visited = new Array(nodes.length)
+		for(var i=0;i<nodes.length;i++)
+			visited[i] = false
+		runBFS(nodes,edges,visited,fig.getStartNode)
+		for(var i=0;i<nodes.length;i++){
+			if(visited[i] == false)
+				return false
+		}
+		return true
+	}
+
 	function Recognize(fig){
 		console.log("Num of nodes : " + fig.getNodes.length)
 		console.log("Num of edges : " + fig.getUndirected.length)
