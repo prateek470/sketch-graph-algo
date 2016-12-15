@@ -432,7 +432,7 @@
 	}
 
 	function isLine(points){
-		return feature_f5(points)/feature_f8(points) > 0.9 && points[0].distance(points[points.length-1]) > 35
+		return feature_f5(points)/feature_f8(points) > 0.9 && points[0].distance(points[points.length-1]) > 15
 	}
 
 	function isScribble(points,path){
